@@ -1,5 +1,4 @@
 ﻿using Flurl.Http;
-using NSubstitute.Core;
 using NUnit.Framework;
 using OrderCloud.Catalyst;
 using OrderCloud.Catalyst.TestApi;
