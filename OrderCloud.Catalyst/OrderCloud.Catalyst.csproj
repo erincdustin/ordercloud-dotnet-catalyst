@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -6,7 +6,7 @@
     <Version>2.3.4</Version>
     <PackageId>ordercloud-dotnet-catalyst</PackageId>
     <Title>OrderCloud SDK Extensions for Azure App Services</Title>
-    <Authors>DJ Steinmetz, Erin Dustin, Alexa Snyder</Authors>
+	<Authors>OrderCloud Team</Authors>
     <Description>Extensions and helpers for building .NET APIs and Serverless Functions, typically hosted in Azure App Services, that integrate with the OrderCloud.io e-commerce platform.</Description>
     <Copyright>Copyright 2024 Sitecore, Inc.</Copyright>
     <PackageProjectUrl>https://github.com/ordercloud-api/ordercloud-dotnet-catalyst</PackageProjectUrl>
