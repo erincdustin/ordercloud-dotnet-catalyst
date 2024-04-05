@@ -1,4 +1,5 @@
 ﻿using Flurl.Http;
+using NSubstitute.Core;
 using NUnit.Framework;
 using OrderCloud.Catalyst;
 using OrderCloud.Catalyst.TestApi;
@@ -206,5 +207,15 @@ namespace OrderCloud.Catalyst.Tests
 				}
 			}
 		}
-	}
+
+        [TestCase("property=value", 1)]
+        [TestCase("xp.author=test*&xp.author=!*user", 2)]
+        public async Task multiple_filters_on_same_property_name_should_succeed(string query, int expectedFilterCount)
+        {
+            var response = await QueryListArgsRoute(query);
+            Assert.AreEqual(200, response.StatusCode);
+            var args = await response.GetJsonAsync<ListArgs<ExampleModel>>();
+            Assert.AreEqual(expectedFilterCount, args.Filters.Count);
+        }
+    }
 }
