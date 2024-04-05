@@ -5,7 +5,7 @@
 		<Version>2.3.0</Version>
 		<PackageId>OrderCloud.Integrations.Payment.BlueSnap</PackageId>
 		<Title>OrderCloud Payment Integration with BlueSnap</Title>
-		<Authors>Oliver Heywood</Authors>
+		<Authors>OrderCloud Team</Authors>
 		<Description>Integrate the OrderCloud ecommerce platform with BlueSnap for payments.</Description>
 		<Copyright>Copyright 2022, Sitecore.</Copyright>
 		<PackageProjectUrl>https://github.com/ordercloud-api/ordercloud-dotnet-catalyst</PackageProjectUrl>

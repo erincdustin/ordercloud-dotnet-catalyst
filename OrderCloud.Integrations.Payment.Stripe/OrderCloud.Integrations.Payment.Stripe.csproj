@@ -6,7 +6,7 @@
     <Version>2.3.0</Version>
     <PackageId>OrderCloud.Integrations.Payment.Stripe</PackageId>
     <Title>OrderCloud Tax Integration with Stripe</Title>
-    <Authors>Alexa Snyder</Authors>
+    <Authors>OrderCloud Team</Authors>
     <Description>Integrate the OrderCloud ecommerce platform with Stripe for payments.</Description>
     <Copyright>Copyright 2022, Sitecore.</Copyright>
     <PackageProjectUrl>https://github.com/ordercloud-api/ordercloud-dotnet-catalyst</PackageProjectUrl>

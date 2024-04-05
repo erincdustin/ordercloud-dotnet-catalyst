@@ -5,7 +5,7 @@
     <Version>2.3.0</Version>
     <PackageId>OrderCloud.Integrations.Messaging.SendGrid</PackageId>
     <Title>OrderCloud Email Integration with SendGrid</Title>
-    <Authors>Oliver Heywood</Authors>
+	<Authors>OrderCloud Team</Authors>
     <Description>Integrate the OrderCloud ecommerce platform with Sendgrid for Email.</Description>
     <Copyright>Copyright 2022, Sitecore.</Copyright>
     <PackageProjectUrl>https://github.com/ordercloud-api/ordercloud-dotnet-catalyst</PackageProjectUrl>
