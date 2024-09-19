@@ -1,40 +1,40 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>2.0.2</Version>
+    <Version>2.3.4</Version>
     <PackageId>ordercloud-dotnet-catalyst</PackageId>
     <Title>OrderCloud SDK Extensions for Azure App Services</Title>
-    <Authors>Oliver Heywood</Authors>
+	<Authors>OrderCloud Team</Authors>
     <Description>Extensions and helpers for building .NET APIs and Serverless Functions, typically hosted in Azure App Services, that integrate with the OrderCloud.io e-commerce platform.</Description>
-    <Copyright>Copyright 2021 Four51, Inc.</Copyright>
+    <Copyright>Copyright 2024 Sitecore, Inc.</Copyright>
     <PackageProjectUrl>https://github.com/ordercloud-api/ordercloud-dotnet-catalyst</PackageProjectUrl>
     <PackageIconUrl></PackageIconUrl>
-    <PackageIcon>ordercloud-logo-blue.png</PackageIcon>
+    <PackageIcon>sitecore_logo.jpg</PackageIcon>
     <PackageTags>ecommerce b2b azure aspnetcore webjobs sitecore ordercloud</PackageTags>
     <PackageLicenseUrl></PackageLicenseUrl>
     <RepositoryUrl>https://github.com/ordercloud-api/ordercloud-dotnet-catalyst</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <Company>Sitecore</Company>
     <Product>OrderCloud</Product>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="..\ordercloud-logo-blue.png" Pack="true" PackagePath="\" />
+    <None Include="..\sitecore_logo.jpg" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="LazyCache" Version="2.1.3" />
+    <PackageReference Include="LazyCache" Version="2.4.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.ViewFeatures" Version="2.2.0" />
     <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.AzureAppConfiguration" Version="4.4.0" />
-    <PackageReference Include="OrderCloud.SDK" Version="0.10.5" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.11.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.AzureAppConfiguration" Version="7.1.0" />
+    <PackageReference Include="OrderCloud.SDK" Version="0.13.5" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.5.0" />
   </ItemGroup>
 
 </Project>

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.1.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.17" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.5" />
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.ServiceBus" Version="4.3.0" />
     <PackageReference Include="NSubstitute" Version="4.2.2" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.0.7" />
@@ -22,6 +22,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OrderCloud.Catalyst\OrderCloud.Catalyst.csproj" />
+    <ProjectReference Include="..\OrderCloud.Integrations.Messaging.MailChimp\OrderCloud.Integrations.Messaging.MailChimp.csproj" />
+    <ProjectReference Include="..\OrderCloud.Integrations.Messaging.SendGrid\OrderCloud.Integrations.Messaging.SendGrid.csproj" />
+    <ProjectReference Include="..\OrderCloud.Integrations.Messaging.Sendinblue\OrderCloud.Integrations.Messaging.SendInBlue.csproj" />
+    <ProjectReference Include="..\OrderCloud.Integrations.Payment.BlueSnap\OrderCloud.Integrations.Payment.BlueSnap.csproj" />
+    <ProjectReference Include="..\OrderCloud.Integrations.Payment.CardConnect\OrderCloud.Integrations.Payment.CardConnect.csproj" />
+    <ProjectReference Include="..\OrderCloud.Integrations.Payment.Stripe\OrderCloud.Integrations.Payment.Stripe.csproj" />
     <ProjectReference Include="..\OrderCloud.Integrations.Shipping.EasyPost\OrderCloud.Integrations.Shipping.EasyPost.csproj" />
     <ProjectReference Include="..\OrderCloud.Integrations.Shipping.Fedex\OrderCloud.Integrations.Shipping.Fedex.csproj" />
     <ProjectReference Include="..\OrderCloud.Integrations.Shipping.UPS\OrderCloud.Integrations.Shipping.UPS.csproj" />

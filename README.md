@@ -1,14 +1,14 @@
 # ordercloud-dotnet-catalyst
 
-[![OrderCloud.Catalyst](https://img.shields.io/nuget/v/ordercloud-dotnet-catalyst.svg?maxAge=3600)](https://www.nuget.org/packages/ordercloud-dotnet-catalyst/)
+[![](https://img.shields.io/nuget/v/ordercloud-dotnet-catalyst.svg?maxAge=3600)](https://www.nuget.org/packages/ordercloud-dotnet-catalyst/)
 
-A foundational library for building OrderCloud middleware, plugins and extensions with .NET. A toolbox of helpers for authentication, performant bulk requests, error handling, jobs, project setup, ect.    
+A foundational library for building [Ordercloud](https://ordercloud.io/) middleware APIs, jobs, plugins and extensions with .NET. A toolbox of helpers for authentication, performant bulk requests, error handling, jobs, project setup, ect.    
 
-See [dotnet-catalyst-examples](https://github.com/ordercloud-api/dotnet-catalyst-examples) for a starter template of a middleware project that uses this library. Targeted guides are found there.
+See [dotnet-middleware](https://github.com/ordercloud-api/dotnet-middleware) for a starter server-side project that uses this library. Targeted guides are found there.
 
 If you're building solutions for OrderCloud using .NET and find a particular task difficult or tedious, we welcome you to [suggest a feature](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/issues/new) for inclusion in this library. 
 
-:warning: Versions 1.x.x have known security holes. Please only use version 2.0.1 and later. 
+:warning: Version 1.x.x has known security holes. Please only use version 2.0.1 and later. 
 
 ## Features
 
@@ -16,18 +16,24 @@ If you're building solutions for OrderCloud using .NET and find a particular tas
 
 Contributing Guide For Integrations -> [CONTRIBUTING.md](./OrderCloud.Catalyst/Integrations/CONTRIBUTING.md)
 
-| Name | Project Guide | Nuget Library | Contributed By | Interfaces |
+| Name | README | Nuget Library | Contributed By | Interfaces |
 | ------------- | ------------- | ------------- | ------------- | ------------- |
-| **EasyPost** | [README](./OrderCloud.Integrations.Shipping.EasyPost) | [OrderCloud.Integrations.Shipping.EasyPost](https://www.nuget.org/packages/OrderCloud.Integrations.Shipping.EasyPost) | OrderCloud Team | IShippingRatesCalculator
-| **Fedex** | [README](./OrderCloud.Integrations.Shipping.Fedex) | [OrderCloud.Integrations.Shipping.Fedex](https://www.nuget.org/packages/OrderCloud.Integrations.Shipping.Fedex) | OrderCloud Team | IShippingRatesCalculator
-| **UPS** | [README](./OrderCloud.Integrations.Shipping.UPS) | [OrderCloud.Integrations.Shipping.UPS](https://www.nuget.org/packages/OrderCloud.Integrations.Shipping.UPS) | OrderCloud Team | IShippingRatesCalculator
-| **Vertex** | [README](./OrderCloud.Integrations.Tax.Vertex) | [OrderCloud.Integrations.Tax.Vertex](https://www.nuget.org/packages/OrderCloud.Integrations.Tax.Vertex) | OrderCloud Team | ITaxCalculator
-| **Avalara** | [README](./OrderCloud.Integrations.Tax.Avalara) | [OrderCloud.Integrations.Tax.Avalara](https://www.nuget.org/packages/OrderCloud.Integrations.Tax.Avalara) | OrderCloud Team | ITaxCalculator, ITaxCodeProvider
-| **TaxJar** | [README](./OrderCloud.Integrations.Tax.TaxJar) | [OrderCloud.Integrations.Tax.TaxJar](https://www.nuget.org/packages/OrderCloud.Integrations.Tax.TaxJar) | OrderCloud Team | ITaxCalculator, ITaxCodeProvider
+| **BlueSnap** | [OrderCloud.Integrations.Payment.BlueSnap](./OrderCloud.Integrations.Payment.BlueSnap) | [![](https://img.shields.io/nuget/v/OrderCloud.Integrations.Payment.BlueSnap.svg?maxAge=3600)](https://www.nuget.org/packages/OrderCloud.Integrations.Payment.BlueSnap) | OrderCloud Team | [`ICreditCardProcessor`](./OrderCloud.Catalyst/Integrations/Interfaces/ICreditCardProcessor.cs), [`ICreditCardSaver`](./OrderCloud.Catalyst/Integrations/Interfaces/ICreditCardSaver.cs)
+| **CardConnect** | [OrderCloud.Integrations.Payment.CardConnect](./OrderCloud.Integrations.Payment.CardConnect) | [![](https://img.shields.io/nuget/v/OrderCloud.Integrations.Payment.CardConnect.svg?maxAge=3600)](https://www.nuget.org/packages/OrderCloud.Integrations.Payment.CardConnect) | OrderCloud Team | [`ICreditCardProcessor`](./OrderCloud.Catalyst/Integrations/Interfaces/ICreditCardProcessor.cs), [`ICreditCardSaver`](./OrderCloud.Catalyst/Integrations/Interfaces/ICreditCardSaver.cs)
+| **Stripe** | [OrderCloud.Integrations.Payment.Stripe](./OrderCloud.Integrations.Payment.Stripe) | [![](https://img.shields.io/nuget/v/OrderCloud.Integrations.Payment.Stripe.svg?maxAge=3600)](https://www.nuget.org/packages/OrderCloud.Integrations.Payment.Stripe) | OrderCloud Team | [`ICreditCardProcessor`](./OrderCloud.Catalyst/Integrations/Interfaces/ICreditCardProcessor.cs), [`ICreditCardSaver`](./OrderCloud.Catalyst/Integrations/Interfaces/ICreditCardSaver.cs)
+| **EasyPost** | [OrderCloud.Integrations.Shipping.EasyPost](./OrderCloud.Integrations.Shipping.EasyPost) | [![](https://img.shields.io/nuget/v/OrderCloud.Integrations.Shipping.EasyPost.svg?maxAge=3600)](https://www.nuget.org/packages/OrderCloud.Integrations.Shipping.EasyPost) | OrderCloud Team | [`IShippingRatesCalculator`](./OrderCloud.Catalyst/Integrations/Interfaces/IShippingRatesCalculator.cs)
+| **Fedex** | [OrderCloud.Integrations.Shipping.Fedex](./OrderCloud.Integrations.Shipping.Fedex) | [![](https://img.shields.io/nuget/v/OrderCloud.Integrations.Shipping.Fedex.svg?maxAge=3600)](https://www.nuget.org/packages/OrderCloud.Integrations.Shipping.Fedex) | OrderCloud Team | [`IShippingRatesCalculator`](./OrderCloud.Catalyst/Integrations/Interfaces/IShippingRatesCalculator.cs)
+| **UPS** | [OrderCloud.Integrations.Shipping.UPS](./OrderCloud.Integrations.Shipping.UPS) | [![](https://img.shields.io/nuget/v/OrderCloud.Integrations.Shipping.UPS.svg?maxAge=3600)](https://www.nuget.org/packages/OrderCloud.Integrations.Shipping.UPS) | OrderCloud Team | [`IShippingRatesCalculator`](./OrderCloud.Catalyst/Integrations/Interfaces/IShippingRatesCalculator.cs)
+| **Avalara** | [OrderCloud.Integrations.Tax.Avalara](./OrderCloud.Integrations.Tax.Avalara) | [![](https://img.shields.io/nuget/v/OrderCloud.Integrations.Tax.Avalara.svg?maxAge=3600)](https://www.nuget.org/packages/OrderCloud.Integrations.Tax.Avalara) | OrderCloud Team | [`ITaxCalculator`](./OrderCloud.Catalyst/Integrations/Interfaces/ITaxCalculator.cs), [`ITaxCodeProvider`](./OrderCloud.Catalyst/Integrations/Interfaces/ITaxCodeProvider.cs)
+| **Vertex** | [OrderCloud.Integrations.Tax.Vertex](./OrderCloud.Integrations.Tax.Vertex) | [![](https://img.shields.io/nuget/v/OrderCloud.Integrations.Tax.Vertex.svg?maxAge=3600)](https://www.nuget.org/packages/OrderCloud.Integrations.Tax.Vertex) | OrderCloud Team | [`ITaxCalculator`](./OrderCloud.Catalyst/Integrations/Interfaces/ITaxCalculator.cs)
+| **TaxJar** | [OrderCloud.Integrations.Tax.TaxJar](./OrderCloud.Integrations.Tax.TaxJar) | [![](https://img.shields.io/nuget/v/OrderCloud.Integrations.Tax.TaxJar.svg?maxAge=3600)](https://www.nuget.org/packages/OrderCloud.Integrations.Tax.TaxJar) | OrderCloud Team | [`ITaxCalculator`](./OrderCloud.Catalyst/Integrations/Interfaces/ITaxCalculator.cs), [`ITaxCodeProvider`](./OrderCloud.Catalyst/Integrations/Interfaces/ITaxCodeProvider.cs)
+| **MailChimp** | [OrderCloud.Integrations.Messaging.MailChimp](./OrderCloud.Integrations.Messaging.MailChimp) | None | OrderCloud Team | [`ISingleEmailSender.cs`](./OrderCloud.Catalyst/Integrations/Interfaces/ISingleEmailSender.cs)
+| **SendGrid** | [OrderCloud.Integrations.Messaging.SendGrid](./OrderCloud.Integrations.Messaging.SendGrid) | None | OrderCloud Team | [`ISingleEmailSender.cs`](./OrderCloud.Catalyst/Integrations/Interfaces/ISingleEmailSender.cs)
+| **SendInBlue** | [OrderCloud.Integrations.Messaging.SendInBlue](./OrderCloud.Integrations.Messaging.SendInBlue) | None | OrderCloud Team | [`ISingleEmailSender.cs`](./OrderCloud.Catalyst/Integrations/Interfaces/ISingleEmailSender.cs)
 
-### [User Authentication](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/OrderCloud.Catalyst/Auth/UserAuth)
+### User Authentication
 
-Use Ordercloud's authentication scheme in your own APIs.
+Use Ordercloud's authentication scheme in your own APIs. [More Info](./OrderCloud.Catalyst/Auth/UserAuth)
 
 ```c#
 [HttpGet("hello"), OrderCloudUserAuth(ApiRole.Shopper)]
@@ -36,9 +42,9 @@ public string SayHello() {
 }
 ```
 
-### [Webhook Authentication](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/OrderCloud.Catalyst/Auth/WebhookAuth)
+### Webhook Authentication
 
-Securely receive push notifications of events from the Ordercloud platform.
+Securely receive push notifications of events from the Ordercloud platform. [More Info](./OrderCloud.Catalyst/Auth/WebhookAuth)
 
 ```c#
 [HttpPost("webhook"), OrderCloudWebhookAuth]
@@ -47,17 +53,17 @@ public object HandleAddressSave([FromBody] WebhookPayloads.Addresses.Save<MyConf
 }
 ```
 
-### [Listing All Pages](./OrderCloud.Catalyst/DataMovement/ListAllAsync)
+### Listing All Pages
 
-If OrderCloud's limit of 100 records per page is a pain point.
+If OrderCloud's limit of 100 records per page is a pain point. [More Info](./OrderCloud.Catalyst/DataMovement/ListAllAsync)
 
 ```c#
 var orders = new OrderCloudClient(...).Orders.ListAllAsync();
 ```
 
-### [Proxying Platform List Calls](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/OrderCloud.Catalyst/Models/ListOptions)
+### Proxying Platform List Calls
 
-Receive list requests to your API with user defined filters, search, paging, and sorting.
+Receive list requests to your API with user defined filters, search, paging, and sorting. [More Info](./OrderCloud.Catalyst/Models/ListOptions)
 ```c#
 [HttpGet("orders"), OrderCloudUserAuth(ApiRole.Shopper)]
 public async Task<ListPage<Order>> ListOrders(IListArgs args)
@@ -71,9 +77,9 @@ public async Task<ListPage<Order>> ListOrders(IListArgs args)
 }
 ```
 
-### [Caching](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/OrderCloud.Catalyst/DataMovement/Caching)
+### Caching
 
-Use Redis or LazyCache. Or, define your own implementation of ISimpleCache.
+Use Redis or LazyCache. Or, define your own implementation of ISimpleCache. [More Info](./OrderCloud.Catalyst/DataMovement/Caching)
 
 ```c#
 private ISimpleCache _cache;
@@ -94,9 +100,9 @@ public Thing EditThing(string thingID) {
 }
 ```
 
-### [Throttler](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/OrderCloud.Catalyst/DataMovement/Throttler) 
+### Throttler
 
-A perfomance helper for multiple async function calls.
+A perfomance helper for multiple async function calls. [More Info](./OrderCloud.Catalyst/DataMovement/Throttler)
 
 ```c# 
 var cars = new List<Car>();
@@ -106,9 +112,9 @@ var minPause = 100 // ms
 var carOwners = await Throttler.RunAsync(cars, minPause, maxConcurency, car => apiClient.GetCarOwner(car.ID);
 ```
 
-### [Error Handling](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/OrderCloud.Catalyst/Errors)
+### Error Handling
 
-Handle API errors, including unexpected ones, with a standard JSON response structure. Define your own errors.
+Handle API errors, including unexpected ones, with a standard JSON response structure. Define your own errors. [More Info](./OrderCloud.Catalyst/Errors)
 
 ```c#
 public class AgeLimit21Exception : CatalystBaseException
@@ -121,9 +127,9 @@ public class AgeLimit21Exception : CatalystBaseException
 Require.That(user.xp.Age >= 21, new AgeLimit21Exception());
 ```
 
-### [Model Validation](https://github.com/ordercloud-api/ordercloud-dotnet-catalyst/tree/dev/tests/OrderCloud.Catalyst.TestApi/Controllers/ModelValidation)
+### Model Validation
 
-Take advantage of DataAnnotation attributes to specify validation requirements for your own custom models.
+Take advantage of DataAnnotation attributes to specify validation requirements for your own custom models. [More Info](./OrderCloud.Catalyst.TestApi/Controllers/ModelValidation)
 
 ```c#
 [Required(ErrorMessage = "This field is required, please try again.")]

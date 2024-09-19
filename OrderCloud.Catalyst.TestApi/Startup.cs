@@ -7,6 +7,7 @@ using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Converters;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Http;
 
 namespace OrderCloud.Catalyst.TestApi
 {
@@ -67,7 +68,12 @@ namespace OrderCloud.Catalyst.TestApi
 				app.UseDeveloperExceptionPage();
 			}
 
-			app.UseCatalystExceptionHandler();
+			app.Use((context, next) =>
+			{
+				context.Request.EnableBuffering(); // allows the body to be read twice for verifying webhooks in the controller route.
+				return next();
+			});
+			app.UseCatalystExceptionHandler(false);
 			app.UseHttpsRedirection();
 			app.UseRouting();
 			app.UseCors("integrationcors");
@@ -111,6 +117,11 @@ namespace OrderCloud.Catalyst.TestApi
 				app.UseDeveloperExceptionPage();
 			}
 
+			app.Use((context, next) =>
+			{
+				context.Request.EnableBuffering(); // allows the body to be read twice for verifying webhooks in the controller route.
+				return next();
+			});
 			app.UseCatalystExceptionHandler(false);
 			app.UseHttpsRedirection();
 			app.UseRouting();

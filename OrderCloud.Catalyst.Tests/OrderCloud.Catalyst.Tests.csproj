@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
 
     <IsPackable>false</IsPackable>
   </PropertyGroup>
@@ -12,7 +12,7 @@
     <PackageReference Include="AutoFixture.NUnit3" Version="4.15.0" />
     <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.1.2" />
     <PackageReference Include="FluentAssertions" Version="6.0.0-alpha0002" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="3.1.12" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.5" />
     <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.ServiceBus" Version="4.3.0" />
     <PackageReference Include="NSubstitute" Version="4.2.2" />
     <PackageReference Include="NSubstitute.Analyzers.CSharp" Version="1.0.14" />
@@ -24,6 +24,7 @@
   <ItemGroup>
     <ProjectReference Include="..\OrderCloud.Catalyst.TestApi\OrderCloud.Catalyst.TestApi.csproj" />
     <ProjectReference Include="..\OrderCloud.Catalyst\OrderCloud.Catalyst.csproj" />
+    <ProjectReference Include="..\OrderCloud.Integrations.Payment.BlueSnap\OrderCloud.Integrations.Payment.BlueSnap.csproj" />
     <ProjectReference Include="..\OrderCloud.Integrations.Shipping.EasyPost\OrderCloud.Integrations.Shipping.EasyPost.csproj" />
     <ProjectReference Include="..\OrderCloud.Integrations.Shipping.Fedex\OrderCloud.Integrations.Shipping.Fedex.csproj" />
     <ProjectReference Include="..\OrderCloud.Integrations.Shipping.UPS\OrderCloud.Integrations.Shipping.UPS.csproj" />
