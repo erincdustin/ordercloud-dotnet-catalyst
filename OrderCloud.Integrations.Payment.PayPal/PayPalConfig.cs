@@ -1,10 +1,14 @@
-﻿using System;
+﻿using OrderCloud.Catalyst;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace OrderCloud.Integrations.Payment.PayPal
 {
-    internal class PayPalConfig
+    public class PayPalConfig : OCIntegrationConfig
     {
+        public override string ServiceName { get; } = "PayPal";
+        public string ClientID {get; set; }
+        public string SecretKey { get; set; }
     }
 }
