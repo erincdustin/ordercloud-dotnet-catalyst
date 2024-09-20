@@ -4,7 +4,7 @@ using System.Text;
 
 namespace OrderCloud.Integrations.Payment.PayPal
 {
-    internal class PayPalService
+    public class PayPalService
     {
     }
 }
