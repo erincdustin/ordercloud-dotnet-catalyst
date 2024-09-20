@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using AutoFixture;
 using NUnit.Framework;
 using OrderCloud.Integrations.Payment.PayPal;
@@ -34,7 +34,9 @@ namespace OrderCloud.Catalyst.Tests.IntegrationTests
             };
 
             var token = await ppClient.GetAccessTokenAsync(config);
-            await new PayPalClient().CreateOrderAsync(config, token);
+            var order = await ppClient.CreateAuthorizedOrderAsync(config, token);
+            order = await ppClient.CapturePaymentAsync(config, token, order.id);
+            Console.WriteLine(order);
         }    
     }
 }

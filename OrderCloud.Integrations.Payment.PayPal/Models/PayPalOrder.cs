@@ -1,9 +1,15 @@
-﻿using System;
+﻿using OrderCloud.Catalyst;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace OrderCloud.Integrations.Payment.PayPal.Models
 {
+    public class AuthorizePayPalTransaction : AuthorizeCCTransaction
+    {
+        public PayPal PayPalDetails { get; set; }
+    }
+
     public class PurchaseUnit
     {
         // The merchant ID for the purchase unit.
