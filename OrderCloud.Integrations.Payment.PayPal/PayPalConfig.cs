@@ -14,6 +14,6 @@ namespace OrderCloud.Integrations.Payment.PayPal
         public string ClientID {get; set; }
         [RequiredIntegrationField]
         public string SecretKey { get; set; }
-        public string Token { get; set; } // TODO: idk if this is right
+        public string Token { get; set; }
     }
 }

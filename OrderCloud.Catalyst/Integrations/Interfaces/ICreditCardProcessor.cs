@@ -85,7 +85,7 @@ namespace OrderCloud.Catalyst
 		/// </summary>
 		public string TransactionID { get; set; }
 		/// <summary>
-		/// The raw processor-specific response code. Depending on the processor, typical meaninings include Approved, Declined, Held For Review, Retry, Error.
+		/// The raw processor-specific response code. Depending on the processor, typical meanings include Approved, Declined, Held For Review, Retry, Error.
 		/// </summary>
 		public string ResponseCode { get; set; }
 		/// <summary>
@@ -103,7 +103,7 @@ namespace OrderCloud.Catalyst
     }
 
 	/// <summary>
-	/// A credit card transaction that follows after a successfull authorization such as capture, void, or refund.
+	/// A credit card transaction that follows after a successful authorization such as capture, void, or refund.
 	/// </summary>
 	public class FollowUpCCTransaction
 	{

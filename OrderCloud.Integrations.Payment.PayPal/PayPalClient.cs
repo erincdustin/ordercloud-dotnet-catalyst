@@ -5,18 +5,18 @@ using System.Threading.Tasks;
 using Azure.Core;
 using Flurl;
 using Flurl.Http;
+using OrderCloud.Catalyst;
 using OrderCloud.Integrations.Payment.PayPal.Models;
 
 namespace OrderCloud.Integrations.Payment.PayPal
 {
     public class PayPalClient
     {
-        protected static IFlurlRequest BuildClient(PayPalConfig config) =>
-            config.BaseUrl.WithBasicAuth(config.ClientID, config.SecretKey);
-
-        public async Task<string> GetAccessTokenAsync(PayPalConfig config)
+        // https://developer.paypal.com/api/rest/authentication/
+        public static async Task<string> GetAccessTokenAsync(PayPalConfig config)
         {
-            var response = await BuildClient(config)
+            var response = await config.BaseUrl
+                .WithBasicAuth(config.ClientID, config.SecretKey)
                 .AppendPathSegments("v1", "oauth2", "token")
                 .PostUrlEncodedAsync(new
                 {
@@ -27,88 +27,36 @@ namespace OrderCloud.Integrations.Payment.PayPal
             return tokenResponse.access_token;
         }
 
-        public async Task<Order> CreateAuthorizedOrderAsync(PayPalConfig config, string token)
+        // https://developer.paypal.com/docs/api/orders/v2/#orders_create
+        public static async Task<Order> CreateAuthorizedOrderAsync(PayPalConfig config, PurchaseUnit purchaseUnit)
         {
-            // https://developer.paypal.com/docs/api/orders/v2/
             var request = await config.BaseUrl
                 .AppendPathSegments("v2", "checkout", "orders")
-                .WithOAuthBearerToken(token)
+                .WithOAuthBearerToken(config.Token)
                 .PostJsonAsync(new
                 {
-                    intent = "AUTHORIZE", // "CAPTURE" 
+                    intent = "CAPTURE",
                     purchase_units = new List<PurchaseUnit>()
                     {
-                        new PurchaseUnit()
-                        {
-                            reference_id = null,
-                            amount = new Amount()
-                            {
-                                currency_code = "USD",
-                                value = "321.45",
-                            }
-                        }
-                    },
-                    //payment_source = new PaymentSource()
-                    //{
-                    //    paypal = new Models.PayPal()
-                    //    {
-                    //        email_address = "dummy@dummy.com", // this pre-populates the email field in the paypal window
-                    //        name = new Name()
-                    //        {
-                    //            given_name = "Fake",
-                    //            surname = "Person"
-                    //        }
-                    //    }
-                    //}
+                        purchaseUnit
+                    }
                 });
 
-            var order = await request.GetJsonAsync<Order>();
-
-            var approveUrl = order.links.FirstOrDefault(l => l.rel == "approve");
-
-            var approvalRequest = approveUrl?.rel.GetJsonAsync();
-            //var getOrderData = await config.BaseUrl
-            //    .AppendPathSegments("v2", "checkout", "orders", order.id)
-            //    .WithOAuthBearerToken(token)
-            //    .GetJsonAsync();
-            
-            return order;
+            return await request.GetJsonAsync<Order>();
         }
 
-        // https://developer.paypal.com/docs/api/orders/v2/#orders_authorize
-        public async Task<Order> CapturePaymentAsync(PayPalConfig config, string token, string orderId, string ppRequestId)
+        // https://developer.paypal.com/docs/api/orders/v2/#orders_capture
+        public static async Task<Order> CapturePaymentAsync(PayPalConfig config, FollowUpCCTransaction transaction)
         {
-            try
-            {
-                var request = await config.BaseUrl
-                    .AppendPathSegments("v2", "checkout", "orders", orderId, "capture")
-                    .WithHeader("PayPal-Request-Id", ppRequestId) // I assume this comes back from the browser
-                    .WithOAuthBearerToken(token)
-                    .PostJsonAsync(new
-                    {
-                        payment_source = new PaymentSource()
-                        {
-                            paypal = new Models.PayPal()
-                            {
-                                email_address = "dummy@dummy.com",
-                                name = new Name()
-                                {
-                                    given_name = "Fake",
-                                    surname = "Person"
-                                }
-                            }
-                        }
+            var request = await config.BaseUrl
+                .AppendPathSegments("v2", "checkout", "orders", transaction.TransactionID, "capture")
+                .WithOAuthBearerToken(config.Token)
+                .PostJsonAsync(new { });
 
-                    });
-
-                var order = await request.GetJsonAsync<Order>();
-                return order;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            return await request.GetJsonAsync<Order>();
         }
+
+
 
         public class AuthTokenResponse
         {
