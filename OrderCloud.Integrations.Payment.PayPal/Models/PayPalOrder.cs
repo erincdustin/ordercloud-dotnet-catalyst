@@ -1,7 +1,4 @@
-﻿using OrderCloud.Catalyst;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace OrderCloud.Integrations.Payment.PayPal.Models
 {
