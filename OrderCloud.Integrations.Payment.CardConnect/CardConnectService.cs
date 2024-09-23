@@ -19,7 +19,12 @@ namespace OrderCloud.Integrations.Payment.CardConnect
 			return token;
 		}
 
-		public async Task<CCTransactionResult> AuthorizeOnlyAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig overrideConfig = null)
+        public Task<AuthenticationResponse> GetAuthenticatedResponseAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig overrideConfig = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<CCTransactionResult> AuthorizeOnlyAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig overrideConfig = null)
 		{
 			var config = ValidateConfig<CardConnectConfig>(overrideConfig ?? _defaultConfig);
 			var cardConnectAuthorizationResponse = await CardConnectClient.AuthorizeTransaction(transaction.ToCardConnectAuthorizationRequest(config), config);

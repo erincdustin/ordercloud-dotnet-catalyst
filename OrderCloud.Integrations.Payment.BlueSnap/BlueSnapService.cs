@@ -18,7 +18,12 @@ namespace OrderCloud.Integrations.Payment.BlueSnap
 			return token;
 		}
 
-		public async Task<CCTransactionResult> AuthorizeOnlyAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig overrideConfig = null)
+        public Task<AuthenticationResponse> GetAuthenticatedResponseAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig overrideConfig = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<CCTransactionResult> AuthorizeOnlyAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig overrideConfig = null)
 		{
 			var config = ValidateConfig<BlueSnapConfig>(overrideConfig ?? _defaultConfig);
 			var trans = BlueSnapTransactionMapper.ToBlueSnapCardTransaction(BlueSnapTransactionType.AUTH_ONLY, transaction);

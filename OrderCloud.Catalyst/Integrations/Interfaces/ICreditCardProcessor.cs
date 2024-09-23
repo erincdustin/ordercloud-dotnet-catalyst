@@ -16,9 +16,13 @@ namespace OrderCloud.Catalyst
 		/// </summary>
 		Task<string> GetIFrameCredentialAsync(OCIntegrationConfig overrideConfig = null);
 		/// <summary>
-		/// Attempt to verify the user can pay by placing a hold on a credit card. Funds will be captured later. Typically used as a verification step directly before order submit.
+		/// Get the token for subsequent requests, and URL for the shopper to authenticate at.
 		/// </summary>
-		Task<CCTransactionResult> AuthorizeOnlyAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig overrideConfig = null);
+        Task<AuthenticationResponse> GetAuthenticatedResponseAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig overrideConfig = null);
+        /// <summary>
+        /// Attempt to verify the user can pay by placing a hold on a credit card. Funds will be captured later. Typically used as a verification step directly before order submit.
+        /// </summary>
+        Task<CCTransactionResult> AuthorizeOnlyAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig overrideConfig = null);
 		/// <summary>
 		/// Attempt to capture funds from a credit card. A prior authorization is required. Typically used when a shipment is created, at the end of the day, or a defined time period after submit.
 		/// </summary>
@@ -33,6 +37,12 @@ namespace OrderCloud.Catalyst
 		Task<CCTransactionResult> RefundCaptureAsync(FollowUpCCTransaction transaction, OCIntegrationConfig overrideConfig = null);
 	}
 
+    public class AuthenticationResponse
+    {
+		public string Token { get; set; }
+		public string Url { get; set; }
+		public string TransactionID { get; set; }
+    }
 
 	public class AuthorizeCCTransaction
 	{

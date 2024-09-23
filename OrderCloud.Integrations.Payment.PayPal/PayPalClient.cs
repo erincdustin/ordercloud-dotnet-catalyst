@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Transactions;
 using Azure.Core;
 using Flurl;
 using Flurl.Http;
@@ -12,6 +14,7 @@ namespace OrderCloud.Integrations.Payment.PayPal
 {
     public class PayPalClient
     {
+        #region Step 1: Get access token, and create order with Authorize intent. Return token and approve URL to client
         // https://developer.paypal.com/api/rest/authentication/
         public static async Task<string> GetAccessTokenAsync(PayPalConfig config)
         {
@@ -28,35 +31,82 @@ namespace OrderCloud.Integrations.Payment.PayPal
         }
 
         // https://developer.paypal.com/docs/api/orders/v2/#orders_create
-        public static async Task<Order> CreateAuthorizedOrderAsync(PayPalConfig config, PurchaseUnit purchaseUnit)
+        public static async Task<PayPalOrder> CreateAuthorizedOrderAsync(PayPalConfig config, PurchaseUnit purchaseUnit)
         {
             var request = await config.BaseUrl
                 .AppendPathSegments("v2", "checkout", "orders")
                 .WithOAuthBearerToken(config.Token)
                 .PostJsonAsync(new
                 {
-                    intent = "CAPTURE",
+                    intent = "AUTHORIZE",
                     purchase_units = new List<PurchaseUnit>()
                     {
                         purchaseUnit
                     }
                 });
 
-            return await request.GetJsonAsync<Order>();
+            return await request.GetJsonAsync<PayPalOrder>();
         }
+        #endregion
 
-        // https://developer.paypal.com/docs/api/orders/v2/#orders_capture
-        public static async Task<Order> CapturePaymentAsync(PayPalConfig config, FollowUpCCTransaction transaction)
+        #region Step 2: Authorize the order
+        // https://developer.paypal.com/docs/api/orders/v2/#orders_authorize
+        public static async Task<PayPalOrder> AuthorizePaymentForOrderAsync(PayPalConfig config, AuthorizeCCTransaction transaction)
         {
+            // transaction.OrderID represents TransactionID from step 1, the PayPal OrderID
             var request = await config.BaseUrl
-                .AppendPathSegments("v2", "checkout", "orders", transaction.TransactionID, "capture")
+                .AppendPathSegments("v2", "checkout", "orders", transaction.OrderID, "authorize")
+                .WithOAuthBearerToken(config.Token)
+                .PostJsonAsync(new {});
+
+            return await request.GetJsonAsync<PayPalOrder>();
+        }
+        #endregion
+
+        #region Step 3: Capture the order
+
+        // https://developer.paypal.com/docs/api/payments/v2/#authorizations_capture
+        public static async Task<PayPalOrder> CapturePaymentAsync(PayPalConfig config, string authorizationID)
+        {
+            // transaction.TransactionID represents TransactionID from step 2, the PayPal Authorization ID
+            var request = await config.BaseUrl
+                .AppendPathSegments("v2", "payments", "authorizations", authorizationID, "capture")
                 .WithOAuthBearerToken(config.Token)
                 .PostJsonAsync(new { });
 
-            return await request.GetJsonAsync<Order>();
+            return await request.GetJsonAsync<PayPalOrder>();
+        }
+        #endregion
+
+        // https://developer.paypal.com/docs/api/payments/v2/#authorizations_void
+        public static async Task VoidPaymentAsync(PayPalConfig config, string authorizationID)
+        {
+            var request = await config.BaseUrl
+                .AppendPathSegments("v2", "payments", "authorizations", authorizationID, "void")
+                .WithOAuthBearerToken(config.Token)
+                .PostJsonAsync(new { });
+
+            var response = await request.GetJsonAsync();
         }
 
+        // https://developer.paypal.com/docs/api/payments/v2/#captures_refund
+        public static async Task<PayPalOrderReturn> RefundPaymentAsync(PayPalConfig config, string captureID)
+        {
+            var request = await config.BaseUrl
+                .AppendPathSegments("v2", "payments", "captures", captureID, "refund")
+                .WithOAuthBearerToken(config.Token)
+                .PostJsonAsync(new { });
 
+            return await request.GetJsonAsync<PayPalOrderReturn>();
+        }
+
+        public static async Task<PaymentTokenResponse> ListPaymentTokensAsync(PayPalConfig config, string customerID)
+        {
+            return await config.BaseUrl
+                .AppendPathSegments("v3", "vault", "payment-tokens")
+                .SetQueryParam("customer_id", customerID)
+                .WithOAuthBearerToken(config.Token).GetJsonAsync<PaymentTokenResponse>();
+        }
 
         public class AuthTokenResponse
         {

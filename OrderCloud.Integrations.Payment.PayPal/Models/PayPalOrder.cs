@@ -5,9 +5,21 @@ using System.Text;
 
 namespace OrderCloud.Integrations.Payment.PayPal.Models
 {
-    public class AuthorizePayPalTransaction : AuthorizeCCTransaction
+    public class PayPalOrder
     {
-        public PayPal PayPalDetails { get; set; }
+        public string id { get; set; }
+        public string status { get; set; }
+        public List<RelatedLink> links { get; set; }
+        public List<PurchaseUnit> purchase_units { get; set; }
+        public PaymentSource payment_source { get; set; }
+
+    }
+
+    public class RelatedLink
+    {
+        public string href { get; set; }
+        public string rel { get; set; }
+        public string method { get; set; }
     }
 
     public class PurchaseUnit
@@ -15,34 +27,21 @@ namespace OrderCloud.Integrations.Payment.PayPal.Models
         // The merchant ID for the purchase unit.
         public string reference_id { get; set; }
         public Amount amount { get; set; }
+        public PurchaseUnitPayment payments { get; set; }
     }
 
-    public class PaymentSource
+    public class PurchaseUnitPayment
     {
-        public Card card { get; set; }
-        public PayPal paypal { get; set; }
+        public List<PurchaseUnitAuthorization> authorizations { get; set; }
     }
 
-    public class Card
+    public class PurchaseUnitAuthorization
     {
-        public string name { get; set; }
-        public string number { get; set; }
-        public string security_code { get; set; }
-        public string expiry { get; set; }
+        public string id { get; set; }
+        public string status { get; set; }
+        public Amount amount { get; set; }
+        public List<RelatedLink> links { get; set; }
     }
-
-    public class PayPal
-    {
-        public Name name { get; set; }
-        public string email_address { get; set; }
-    }
-
-    public class Name
-    {
-        public string given_name { get; set; }
-        public string surname { get; set; }
-    }
-
     public class Amount
     {
         // The three-character ISO-4217 currency code.
@@ -55,17 +54,59 @@ namespace OrderCloud.Integrations.Payment.PayPal.Models
         public string value { get; set; }
     }
 
-    public class Order
+    public class PaymentSource
     {
-        public string id { get; set; }
-        public string status { get; set; }
-        public List<OrderLink> links { get; set; }
+        public PayPal paypal { get; set; }
+        public Card card { get; set; }
     }
 
-    public class OrderLink
+    public class PayPal
     {
-        public string href { get; set; }
-        public string rel { get; set; }
-        public string method { get; set; }
+        public Name name { get; set; }
+        public string email_address { get; set; }
+        public string account_id { get; set; }
+    }
+
+    public class Card
+    {
+        public string name { get; set; }
+        public string last_digits { get; set; }
+        public string expiry { get; set; }
+        public string brand { get; set; }
+    }
+
+    public class Name
+    {
+        public string given_name { get; set; }
+        public string surname { get; set; }
+    }
+
+    public class PayPalOrderReturn
+    {
+        public string id { get; set; }
+        public Amount amount { get; set; }
+        public string status { get; set; }
+        public string invoice_id { get; set; }
+        public string note { get; set; }
+    }
+
+    public class PaymentTokenResponse
+    {
+        public PayPalCustomer customer { get; set; }
+        public List<PayPalPaymentToken> payment_tokens { get; set; }
+    }
+
+    public class PayPalCustomer
+    {
+        public string id { get; set; }
+        public string merchant_customer_id { get; set; }
+    }
+
+    public class PayPalPaymentToken
+    {
+        public string id { get; set; }
+        public PayPalCustomer customer { get; set; }
+        public PaymentSource payment_source { get; set; }
+        public List<RelatedLink> links { get; set; }
     }
 }

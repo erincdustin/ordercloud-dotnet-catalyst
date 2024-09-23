@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using OrderCloud.Catalyst;
 using OrderCloud.Integrations.Payment.PayPal.Mappers;
-using OrderCloud.Integrations.Payment.PayPal.Models;
 
 namespace OrderCloud.Integrations.Payment.PayPal
 {
@@ -11,143 +11,107 @@ namespace OrderCloud.Integrations.Payment.PayPal
     {
         #region ICreditCardProcessor
 
-        public async Task<string> GetIFrameCredentialAsync(OCIntegrationConfig overrideConfig = null)
+        public Task<string> GetIFrameCredentialAsync(OCIntegrationConfig overrideConfig = null)
         {
-            // this can authenticate paypal
+            throw new NotImplementedException();
+        }
+
+        public async Task<AuthenticationResponse> GetAuthenticatedResponseAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig overrideConfig = null)
+        {
             var config = ValidateConfig<PayPalConfig>(overrideConfig ?? _defaultConfig);
             var token = await PayPalClient.GetAccessTokenAsync(config);
-            return token;
+            var purchaseUnitMapper = new PayPalOrderPaymentMapper();
+            var purchaseUnit = purchaseUnitMapper.MapToPurchaseUnit(transaction);
+
+            var order = await PayPalClient.CreateAuthorizedOrderAsync(config, purchaseUnit);
+            return new AuthenticationResponse()
+            {
+                Token = token,
+                Url = order.links.FirstOrDefault(l => l.rel == "approve")?.href,
+                TransactionID = order.id
+            };
         }
 
         public async Task<CCTransactionResult> AuthorizeOnlyAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig overrideConfig = null)
         {
-            // this can create the order, with AUTHORIZE as the intent
-            // must include the token in the overrideConfig
             var config = ValidateConfig<PayPalConfig>(overrideConfig ?? _defaultConfig);
-            var purchaseUnitMapper = new PayPalPurchaseUnitMapper();
-            var purchaseUnit = purchaseUnitMapper.MapToPurchaseUnit(transaction);
+            // AuthorizeCCTransaction.OrderID represents PayPal OrderID, NOT OrderCloud OrderID
+            var authorizedPaymentForOrder = await PayPalClient.AuthorizePaymentForOrderAsync(config, transaction);
+            var ccTransactionMapper = new PayPalOrderPaymentMapper();
 
-            var order = await PayPalClient.CreateAuthorizedOrderAsync(config, purchaseUnit);
-            return purchaseUnitMapper.MapOrderToCcTransactionResult(order, transaction);
+            return ccTransactionMapper.MapAuthorizedPaymentToCCTransactionResult(authorizedPaymentForOrder);
+            // CCTransactionResult.TransactionID represents the PayPal Authorization ID
         }
 
         public async Task<CCTransactionResult> CapturePriorAuthorizationAsync(FollowUpCCTransaction transaction, OCIntegrationConfig overrideConfig = null)
         {
-            // this can capture the order
             var config = ValidateConfig<PayPalConfig>(overrideConfig ?? _defaultConfig);
+            // FollowUpCCTransaction.TransactionID represents the PayPal Authorization ID
+            var capturedPaymentForOrder = await PayPalClient.CapturePaymentAsync(config, transaction.TransactionID);
+            var ccTransactionMapper = new PayPalOrderPaymentMapper();
+            return ccTransactionMapper.MapCapturedPaymentToCCTransactionResult(capturedPaymentForOrder);
+            // CCTransactionResult.TransactionID represents the PayPal Capture ID
+        }
 
-            var response = await PayPalClient.CapturePaymentAsync(config, transaction);
-            return new CCTransactionResult()
+        public async Task<CCTransactionResult> VoidAuthorizationAsync(FollowUpCCTransaction transaction, OCIntegrationConfig overrideConfig = null)
+        {
+            var config = ValidateConfig<PayPalConfig>(overrideConfig ?? _defaultConfig);
+            // FollowUpCCTransaction.TransactionID represents the PayPal Authorization ID
+            await PayPalClient.VoidPaymentAsync(config, transaction.TransactionID);
+            return new CCTransactionResult() // TODO: fix this
             {
                 Amount = transaction.Amount,
-                Succeeded = response.status.ToLower() == "completed"
+                Succeeded = true
             };
         }
 
-        public Task<CCTransactionResult> VoidAuthorizationAsync(FollowUpCCTransaction transaction, OCIntegrationConfig overrideConfig = null)
+        public async Task<CCTransactionResult> RefundCaptureAsync(FollowUpCCTransaction transaction, OCIntegrationConfig overrideConfig = null)
         {
-            throw new NotImplementedException();
+            var config = ValidateConfig<PayPalConfig>(overrideConfig ?? _defaultConfig);
+            // FollowUpCCTransaction.TransactionID represents the PayPal Capture ID
+            var orderReturn = await PayPalClient.RefundPaymentAsync(config, transaction.TransactionID);
+            var ccTransactionMapper = new PayPalOrderPaymentMapper();
+            return ccTransactionMapper.MapRefundPaymentToCCTransactionResult(orderReturn);
+            // CCTransactionResult.TransactionID represents PayPal Refund ID
         }
 
-        public Task<CCTransactionResult> RefundCaptureAsync(FollowUpCCTransaction transaction, OCIntegrationConfig overrideConfig = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        //public async Task<CCTransactionResult> VoidAuthorizationAsync(FollowUpCCTransaction transaction,
-        //    OCIntegrationConfig configOverride = null)
-        //{
-        //    var config = ValidateConfig<PayPalConfig>(configOverride ?? _defaultConfig);
-        //    var paymentIntentMapper = new StripePaymentIntentMapper();
-        //    var cancelPaymentIntentOptions = paymentIntentMapper.MapPaymentIntentCancelOptions(transaction);
-        //    var canceledPaymentIntent = await PayPalClient.CancelPaymentIntentAsync(transaction.TransactionID, cancelPaymentIntentOptions, config);
-        //    return paymentIntentMapper.MapPaymentIntentCancelResponse(canceledPaymentIntent);
-        //}
-
-        //public async Task<CCTransactionResult> RefundCaptureAsync(FollowUpCCTransaction transaction,
-        //    OCIntegrationConfig configOverride = null)
-        //{
-        //    var config = ValidateConfig<PayPalConfig>(configOverride ?? _defaultConfig);
-        //    var refundMapper = new StripeRefundMapper();
-        //    var refundCreateOptions = refundMapper.MapRefundCreateOptions(transaction);
-        //    var refund = await PayPalClient.CreateRefundAsync(refundCreateOptions, config);
-        //    return refundMapper.MapRefundCreateResponse(refund);
-        //}
-        //#endregion
-
-        //#region ICreditCardSaver
-
-        //public async Task<CardCreatedResponse> CreateSavedCardAsync(PaymentSystemCustomer customer,
-        //    PCISafeCardDetails card, OCIntegrationConfig configOverride = null)
-        //{
-        //    var config = ValidateConfig<PayPalConfig>(configOverride ?? _defaultConfig);
-        //    var paymentMethodMapper = new StripePaymentMethodMapper();
-
-        //    if (!customer.CustomerAlreadyExists)
-        //    {
-        //        var stripeCustomerOptions = StripeCustomerCreateMapper.MapCustomerOptions(customer);
-        //        var stripeCustomer = await PayPalClient.CreateCustomerAsync(stripeCustomerOptions, config);
-        //        customer.ID = stripeCustomer.Id;
-        //    }
-
-        //    var paymentMethodCreateOptions = paymentMethodMapper.MapPaymentMethodCreateOptions(customer.ID, card);
-        //    var paymentMethod = await PayPalClient.CreatePaymentMethodAsync(paymentMethodCreateOptions, config);
-        //    var paymentMethodAttachOptions = paymentMethodMapper.MapPaymentMethodAttachOptions(customer.ID);
-        //    paymentMethod = await PayPalClient.AttachPaymentMethodToCustomerAsync(paymentMethod.Id, paymentMethodAttachOptions, config);
-        //    return paymentMethodMapper.MapPaymentMethodCreateResponse(customer.ID, paymentMethod);
-        //}
-
-        //public async Task<List<PCISafeCardDetails>> ListSavedCardsAsync(string customerID,
-        //    OCIntegrationConfig configOverride = null)
-        //{
-        //    {
-        //        var config = ValidateConfig<PayPalConfig>(configOverride ?? _defaultConfig);
-        //        var paymentMethodMapper = new StripePaymentMethodMapper();
-        //        var listPaymentMethodsOptions = paymentMethodMapper.MapPaymentMethodListOptions(customerID);
-        //        var paymentMethodList = await PayPalClient.ListPaymentMethodsAsync(listPaymentMethodsOptions, config);
-        //        return paymentMethodMapper.MapStripePaymentMethodListResponse(paymentMethodList);
-        //    }
-        //}
-
-        //public async Task<PCISafeCardDetails> GetSavedCardAsync(string customerID, string paymentMethodID,
-        //    OCIntegrationConfig configOverride = null)
-        //{
-        //    var config = ValidateConfig<PayPalConfig>(configOverride ?? _defaultConfig);
-        //    var cardMapper = new StripeCardMapper();
-        //    var paymentMethod = await PayPalClient.RetrievePaymentMethodAsync(paymentMethodID, config);
-        //    return cardMapper.MapStripeCardGetResponse(paymentMethod);
-        //}
-
-        //public async Task DeleteSavedCardAsync(string customerID, string paymentMethodID, OCIntegrationConfig configOverride = null)
-        //{
-        //    var config = ValidateConfig<PayPalConfig>(configOverride ?? _defaultConfig);
-        //    await PayPalClient.DetachPaymentMethodToCustomerAsync(paymentMethodID, config);
-        //}
         #endregion
 
+        #region ICreditCardSaver
         public PayPalService(OCIntegrationConfig defaultConfig) : base(defaultConfig)
         {
         }
 
-        public Task<List<PCISafeCardDetails>> ListSavedCardsAsync(string customerID, OCIntegrationConfig configOverride = null)
+        public async Task<List<PCISafeCardDetails>> ListSavedCardsAsync(string customerID, OCIntegrationConfig overrideConfig = null)
         {
-            throw new NotImplementedException();
+            var config = ValidateConfig<PayPalConfig>(overrideConfig ?? _defaultConfig);
+            var paymentTokenResponse = await PayPalClient.ListPaymentTokensAsync(config, customerID);
+            var listOfCardDetails = new List<PCISafeCardDetails>();
+            var cardDetailsMapper = new PayPalPaymentTokensMapper();
+            foreach (var paymentToken in paymentTokenResponse.payment_tokens)
+            {
+                var mappedDetails = cardDetailsMapper.MapPaymentTokenToPCISafeCardDetails(paymentToken);
+                listOfCardDetails.Add(mappedDetails);
+            }
+
+            return listOfCardDetails;
         }
 
-        public Task<PCISafeCardDetails> GetSavedCardAsync(string customerID, string cardID, OCIntegrationConfig configOverride = null)
+        public Task<PCISafeCardDetails> GetSavedCardAsync(string customerID, string cardID, OCIntegrationConfig overrideConfig = null)
         {
             throw new NotImplementedException();
         }
 
         public Task<CardCreatedResponse> CreateSavedCardAsync(PaymentSystemCustomer customer, PCISafeCardDetails card,
-            OCIntegrationConfig configOverride = null)
+            OCIntegrationConfig overrideConfig = null)
         {
             throw new NotImplementedException();
         }
 
-        public Task DeleteSavedCardAsync(string customerID, string cardID, OCIntegrationConfig configOverride = null)
+        public Task DeleteSavedCardAsync(string customerID, string cardID, OCIntegrationConfig overrideConfig = null)
         {
             throw new NotImplementedException();
         }
+        #endregion
     }
 }

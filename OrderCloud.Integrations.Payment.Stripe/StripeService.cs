@@ -18,6 +18,11 @@ namespace OrderCloud.Integrations.Payment.Stripe
             return token;
         }
 
+        public Task<AuthenticationResponse> GetAuthenticatedResponseAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig overrideConfig = null)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public async Task<CCTransactionResult> AuthorizeOnlyAsync(AuthorizeCCTransaction transaction,
             OCIntegrationConfig configOverride = null)
         {
