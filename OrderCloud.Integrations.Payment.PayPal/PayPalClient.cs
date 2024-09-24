@@ -59,7 +59,6 @@ namespace OrderCloud.Integrations.Payment.PayPal
             await BuildClient(config)
                 .AppendPathSegments("v2", "payments", "authorizations", transaction.TransactionID, "void")
                 .WithHeader("PayPal-Request-Id", transaction.RequestID)
-                .WithOAuthBearerToken(config.Token)
                 .PostJsonAsync(new { });
         }
 
@@ -69,7 +68,6 @@ namespace OrderCloud.Integrations.Payment.PayPal
             return await BuildClient(config)
                 .AppendPathSegments("v2", "payments", "captures", transaction.TransactionID, "refund")
                 .WithHeader("PayPal-Request-Id", transaction.RequestID)
-                .WithOAuthBearerToken(config.Token)
                 .PostJsonAsync(new { }).ReceiveJson<PayPalOrderReturn>();
         }
 
@@ -79,7 +77,7 @@ namespace OrderCloud.Integrations.Payment.PayPal
             return await BuildClient(config)
                 .AppendPathSegments("v3", "vault", "payment-tokens")
                 .SetQueryParam("customer_id", customerID)
-                .WithOAuthBearerToken(config.Token).GetJsonAsync<PaymentTokenResponse>();
+                .GetJsonAsync<PaymentTokenResponse>();
         }
 
         // https://developer.paypal.com/docs/api/payment-tokens/v3/#payment-tokens_get
@@ -88,7 +86,7 @@ namespace OrderCloud.Integrations.Payment.PayPal
             return await BuildClient(config)
                 .AppendPathSegments("v3", "vault", "payment-tokens", tokenID)
                 .WithHeader("PayPal-Request-ID", "")
-                .WithOAuthBearerToken(config.Token).GetJsonAsync<PayPalPaymentToken>();
+                .GetJsonAsync<PayPalPaymentToken>();
         }
     }
 }
