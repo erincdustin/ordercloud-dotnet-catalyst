@@ -22,14 +22,14 @@ namespace OrderCloud.Integrations.Payment.PayPal
             var token = await PayPalClient.GetAccessTokenAsync(config);
             var purchaseUnitMapper = new PayPalOrderPaymentMapper();
             var purchaseUnit = purchaseUnitMapper.MapToPurchaseUnit(transaction);
-            var requestID = Guid.NewGuid().ToString();
-            var order = await PayPalClient.CreateAuthorizedOrderAsync(config, purchaseUnit, requestID);
+            config.Token = token;
+            var order = await PayPalClient.CreateAuthorizedOrderAsync(config, purchaseUnit, transaction.RequestID);
             return new AuthenticationResponse()
             {
                 Token = token,
                 Url = order.links.FirstOrDefault(l => l.rel == "approve")?.href,
                 TransactionID = order.id,
-                RequestID = requestID
+                RequestID = transaction.RequestID
             };
         }
 
