@@ -19,14 +19,11 @@ namespace OrderCloud.Integrations.Payment.PayPal
         public async Task<AuthenticationResponse> GetAuthenticatedResponseAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig overrideConfig = null)
         {
             var config = ValidateConfig<PayPalConfig>(overrideConfig ?? _defaultConfig);
-            var token = await PayPalClient.GetAccessTokenAsync(config);
             var purchaseUnitMapper = new PayPalOrderPaymentMapper();
             var purchaseUnit = purchaseUnitMapper.MapToPurchaseUnit(transaction);
-            config.Token = token;
             var order = await PayPalClient.CreateAuthorizedOrderAsync(config, purchaseUnit, transaction.RequestID);
             return new AuthenticationResponse()
             {
-                Token = token,
                 Url = order.links.FirstOrDefault(l => l.rel == "approve")?.href,
                 TransactionID = order.id,
                 RequestID = transaction.RequestID
@@ -39,7 +36,6 @@ namespace OrderCloud.Integrations.Payment.PayPal
             // AuthorizeCCTransaction.OrderID represents PayPal OrderID, NOT OrderCloud OrderID
             var authorizedPaymentForOrder = await PayPalClient.AuthorizePaymentForOrderAsync(config, transaction);
             var ccTransactionMapper = new PayPalOrderPaymentMapper();
-
             return ccTransactionMapper.MapAuthorizedPaymentToCCTransactionResult(authorizedPaymentForOrder);
             // CCTransactionResult.TransactionID represents the PayPal Authorization ID
         }
@@ -50,7 +46,9 @@ namespace OrderCloud.Integrations.Payment.PayPal
             // FollowUpCCTransaction.TransactionID represents the PayPal Authorization ID
             var capturedPaymentForOrder = await PayPalClient.CapturePaymentAsync(config, transaction);
             var ccTransactionMapper = new PayPalOrderPaymentMapper();
-            return ccTransactionMapper.MapCapturedPaymentToCCTransactionResult(capturedPaymentForOrder);
+            var ccTransaction = ccTransactionMapper.MapCapturedPaymentToCCTransactionResult(capturedPaymentForOrder);
+            ccTransaction.Amount = transaction.Amount; // PayPal Capture Authorized Payment doesn't return an amount in the response body
+            return ccTransaction;
             // CCTransactionResult.TransactionID represents the PayPal Capture ID
         }
 

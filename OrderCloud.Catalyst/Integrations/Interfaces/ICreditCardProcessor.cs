@@ -39,7 +39,6 @@ namespace OrderCloud.Catalyst
 
     public class AuthenticationResponse
     {
-		public string Token { get; set; }
 		public string Url { get; set; }
 		public string TransactionID { get; set; }
 		public string RequestID { get; set; }

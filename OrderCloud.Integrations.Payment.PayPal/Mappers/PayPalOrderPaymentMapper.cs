@@ -19,7 +19,8 @@ namespace OrderCloud.Integrations.Payment.PayPal.Mappers
 
         public CCTransactionResult MapAuthorizedPaymentToCCTransactionResult(PayPalOrder authorizedOrder)
         {
-            var amount = ConvertStringAmountToDecimal(authorizedOrder.purchase_units.FirstOrDefault()?.amount.value);
+            var amount = ConvertStringAmountToDecimal(authorizedOrder.purchase_units.FirstOrDefault()?.payments.authorizations
+                .FirstOrDefault()?.amount.value);
             var authorizationId = authorizedOrder.purchase_units.FirstOrDefault()?.payments.authorizations
                 .FirstOrDefault()?.id;
             var ccTransaction = new CCTransactionResult
@@ -37,11 +38,9 @@ namespace OrderCloud.Integrations.Payment.PayPal.Mappers
 
         public CCTransactionResult MapCapturedPaymentToCCTransactionResult(PayPalOrder capturedOrder)
         {
-            var amount = ConvertStringAmountToDecimal(capturedOrder.purchase_units.FirstOrDefault()?.amount.value);
             return new CCTransactionResult()
             {
                 TransactionID = capturedOrder.id, // Capture ID needed to Refund payment
-                Amount = amount,
                 Succeeded = capturedOrder.status.ToLowerInvariant() == "completed"
             };
         }
