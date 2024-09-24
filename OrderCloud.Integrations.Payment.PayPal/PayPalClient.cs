@@ -26,10 +26,11 @@ namespace OrderCloud.Integrations.Payment.PayPal
         }
 
         // https://developer.paypal.com/docs/api/orders/v2/#orders_create
-        public static async Task<PayPalOrder> CreateAuthorizedOrderAsync(PayPalConfig config, PurchaseUnit purchaseUnit)
+        public static async Task<PayPalOrder> CreateAuthorizedOrderAsync(PayPalConfig config, PurchaseUnit purchaseUnit, string requestId)
         {
             var request = await config.BaseUrl
                 .AppendPathSegments("v2", "checkout", "orders")
+                .WithHeader("PayPal-Request-Id", requestId)
                 .WithOAuthBearerToken(config.Token)
                 .PostJsonAsync(new
                 {
@@ -51,6 +52,7 @@ namespace OrderCloud.Integrations.Payment.PayPal
             // transaction.OrderID represents TransactionID from step 1, the PayPal OrderID
             var request = await config.BaseUrl
                 .AppendPathSegments("v2", "checkout", "orders", transaction.OrderID, "authorize")
+                .WithHeader("PayPal-Request-Id", transaction.RequestID)
                 .WithOAuthBearerToken(config.Token)
                 .PostJsonAsync(new {});
 
@@ -61,11 +63,12 @@ namespace OrderCloud.Integrations.Payment.PayPal
         #region Step 3: Capture the order
 
         // https://developer.paypal.com/docs/api/payments/v2/#authorizations_capture
-        public static async Task<PayPalOrder> CapturePaymentAsync(PayPalConfig config, string authorizationID)
+        public static async Task<PayPalOrder> CapturePaymentAsync(PayPalConfig config, FollowUpCCTransaction transaction)
         {
             // transaction.TransactionID represents TransactionID from step 2, the PayPal Authorization ID
             var request = await config.BaseUrl
-                .AppendPathSegments("v2", "payments", "authorizations", authorizationID, "capture")
+                .AppendPathSegments("v2", "payments", "authorizations", transaction.TransactionID, "capture")
+                .WithHeader("PayPal-Request-Id", transaction.RequestID)
                 .WithOAuthBearerToken(config.Token)
                 .PostJsonAsync(new { });
 
@@ -74,10 +77,11 @@ namespace OrderCloud.Integrations.Payment.PayPal
         #endregion
 
         // https://developer.paypal.com/docs/api/payments/v2/#authorizations_void
-        public static async Task VoidPaymentAsync(PayPalConfig config, string authorizationID)
+        public static async Task VoidPaymentAsync(PayPalConfig config, FollowUpCCTransaction transaction)
         {
             var request = await config.BaseUrl
-                .AppendPathSegments("v2", "payments", "authorizations", authorizationID, "void")
+                .AppendPathSegments("v2", "payments", "authorizations", transaction.TransactionID, "void")
+                .WithHeader("PayPal-Request-Id", transaction.RequestID)
                 .WithOAuthBearerToken(config.Token)
                 .PostJsonAsync(new { });
 
@@ -85,22 +89,33 @@ namespace OrderCloud.Integrations.Payment.PayPal
         }
 
         // https://developer.paypal.com/docs/api/payments/v2/#captures_refund
-        public static async Task<PayPalOrderReturn> RefundPaymentAsync(PayPalConfig config, string captureID)
+        public static async Task<PayPalOrderReturn> RefundPaymentAsync(PayPalConfig config, FollowUpCCTransaction transaction)
         {
             var request = await config.BaseUrl
-                .AppendPathSegments("v2", "payments", "captures", captureID, "refund")
+                .AppendPathSegments("v2", "payments", "captures", transaction.TransactionID, "refund")
+                .WithHeader("PayPal-Request-Id", transaction.RequestID)
                 .WithOAuthBearerToken(config.Token)
                 .PostJsonAsync(new { });
 
             return await request.GetJsonAsync<PayPalOrderReturn>();
         }
 
+        // https://developer.paypal.com/docs/api/payment-tokens/v3/#customer_payment-tokens_get
         public static async Task<PaymentTokenResponse> ListPaymentTokensAsync(PayPalConfig config, string customerID)
         {
             return await config.BaseUrl
                 .AppendPathSegments("v3", "vault", "payment-tokens")
                 .SetQueryParam("customer_id", customerID)
                 .WithOAuthBearerToken(config.Token).GetJsonAsync<PaymentTokenResponse>();
+        }
+
+        // https://developer.paypal.com/docs/api/payment-tokens/v3/#payment-tokens_get
+        public static async Task<PayPalPaymentToken> GetPaymentTokenAsync(PayPalConfig config, string tokenID)
+        {
+            return await config.BaseUrl
+                .AppendPathSegments("v3", "vault", "payment-tokens", tokenID)
+                .WithHeader("PayPal-Request-ID", "")
+                .WithOAuthBearerToken(config.Token).GetJsonAsync<PayPalPaymentToken>();
         }
 
         public class AuthTokenResponse

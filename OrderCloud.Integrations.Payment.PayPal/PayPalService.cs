@@ -22,13 +22,14 @@ namespace OrderCloud.Integrations.Payment.PayPal
             var token = await PayPalClient.GetAccessTokenAsync(config);
             var purchaseUnitMapper = new PayPalOrderPaymentMapper();
             var purchaseUnit = purchaseUnitMapper.MapToPurchaseUnit(transaction);
-
-            var order = await PayPalClient.CreateAuthorizedOrderAsync(config, purchaseUnit);
+            var requestID = Guid.NewGuid().ToString();
+            var order = await PayPalClient.CreateAuthorizedOrderAsync(config, purchaseUnit, requestID);
             return new AuthenticationResponse()
             {
                 Token = token,
                 Url = order.links.FirstOrDefault(l => l.rel == "approve")?.href,
-                TransactionID = order.id
+                TransactionID = order.id,
+                RequestID = requestID
             };
         }
 
@@ -47,7 +48,7 @@ namespace OrderCloud.Integrations.Payment.PayPal
         {
             var config = ValidateConfig<PayPalConfig>(overrideConfig ?? _defaultConfig);
             // FollowUpCCTransaction.TransactionID represents the PayPal Authorization ID
-            var capturedPaymentForOrder = await PayPalClient.CapturePaymentAsync(config, transaction.TransactionID);
+            var capturedPaymentForOrder = await PayPalClient.CapturePaymentAsync(config, transaction);
             var ccTransactionMapper = new PayPalOrderPaymentMapper();
             return ccTransactionMapper.MapCapturedPaymentToCCTransactionResult(capturedPaymentForOrder);
             // CCTransactionResult.TransactionID represents the PayPal Capture ID
@@ -57,7 +58,7 @@ namespace OrderCloud.Integrations.Payment.PayPal
         {
             var config = ValidateConfig<PayPalConfig>(overrideConfig ?? _defaultConfig);
             // FollowUpCCTransaction.TransactionID represents the PayPal Authorization ID
-            await PayPalClient.VoidPaymentAsync(config, transaction.TransactionID);
+            await PayPalClient.VoidPaymentAsync(config, transaction);
             return new CCTransactionResult() // TODO: fix this
             {
                 Amount = transaction.Amount,
@@ -69,7 +70,7 @@ namespace OrderCloud.Integrations.Payment.PayPal
         {
             var config = ValidateConfig<PayPalConfig>(overrideConfig ?? _defaultConfig);
             // FollowUpCCTransaction.TransactionID represents the PayPal Capture ID
-            var orderReturn = await PayPalClient.RefundPaymentAsync(config, transaction.TransactionID);
+            var orderReturn = await PayPalClient.RefundPaymentAsync(config, transaction);
             var ccTransactionMapper = new PayPalOrderPaymentMapper();
             return ccTransactionMapper.MapRefundPaymentToCCTransactionResult(orderReturn);
             // CCTransactionResult.TransactionID represents PayPal Refund ID
@@ -97,9 +98,12 @@ namespace OrderCloud.Integrations.Payment.PayPal
             return listOfCardDetails;
         }
 
-        public Task<PCISafeCardDetails> GetSavedCardAsync(string customerID, string cardID, OCIntegrationConfig overrideConfig = null)
+        public async Task<PCISafeCardDetails> GetSavedCardAsync(string customerID, string cardID, OCIntegrationConfig overrideConfig = null)
         {
-            throw new NotImplementedException();
+            var config = ValidateConfig<PayPalConfig>(overrideConfig ?? _defaultConfig);
+            var paymentToken = await PayPalClient.GetPaymentTokenAsync(config, cardID);
+            var cardDetailsMapper = new PayPalPaymentTokensMapper();
+            return cardDetailsMapper.MapPaymentTokenToPCISafeCardDetails(paymentToken);
         }
 
         public Task<CardCreatedResponse> CreateSavedCardAsync(PaymentSystemCustomer customer, PCISafeCardDetails card,

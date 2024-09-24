@@ -42,6 +42,7 @@ namespace OrderCloud.Catalyst
 		public string Token { get; set; }
 		public string Url { get; set; }
 		public string TransactionID { get; set; }
+		public string RequestID { get; set; }
     }
 
 	public class AuthorizeCCTransaction
@@ -78,6 +79,10 @@ namespace OrderCloud.Catalyst
 		/// Implementations of this interface may choose to ignore this or use it as they choose. Never use XP properties.
 		/// </summary>
 		public OrderWorksheet OrderWorksheet { get; set; }
+        /// <summary>
+        /// An optional header value used by some processors to enforce idempotency.
+        /// </summary>
+        public string RequestID { get; set; }
 	}
 
 	public class CCTransactionResult
@@ -125,5 +130,9 @@ namespace OrderCloud.Catalyst
 		/// The amount to capture, void, or refund. If null, will default to the full amount of the existing transaction.
 		/// </summary>
 		public decimal Amount { get; set; }
-	}
+        /// <summary>
+        /// An optional header value used by some processors to enforce idempotency.
+        /// </summary>
+        public string RequestID { get; set; }
+    }
 }
