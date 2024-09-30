@@ -56,11 +56,11 @@ namespace OrderCloud.Integrations.Payment.PayPal
         {
             var config = ValidateConfig<PayPalConfig>(overrideConfig ?? _defaultConfig);
             // FollowUpCCTransaction.TransactionID represents the PayPal Authorization ID
-            await PayPalClient.VoidPaymentAsync(config, transaction);
-            return new CCTransactionResult() // TODO: fix this
+            var voidTransactionResponse = await PayPalClient.VoidPaymentAsync(config, transaction);
+            return new CCTransactionResult() 
             {
                 Amount = transaction.Amount,
-                Succeeded = true
+                Succeeded = voidTransactionResponse.StatusCode == 204
             };
         }
 

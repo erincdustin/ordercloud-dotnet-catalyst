@@ -54,9 +54,9 @@ namespace OrderCloud.Integrations.Payment.PayPal
         #endregion
 
         // https://developer.paypal.com/docs/api/payments/v2/#authorizations_void
-        public static async Task VoidPaymentAsync(PayPalConfig config, FollowUpCCTransaction transaction)
+        public static async Task<IFlurlResponse> VoidPaymentAsync(PayPalConfig config, FollowUpCCTransaction transaction)
         {
-            await BuildClient(config)
+            return await BuildClient(config)
                 .AppendPathSegments("v2", "payments", "authorizations", transaction.TransactionID, "void")
                 .WithHeader("PayPal-Request-Id", transaction.RequestID)
                 .PostJsonAsync(new { });
@@ -65,10 +65,25 @@ namespace OrderCloud.Integrations.Payment.PayPal
         // https://developer.paypal.com/docs/api/payments/v2/#captures_refund
         public static async Task<PayPalOrderReturn> RefundPaymentAsync(PayPalConfig config, FollowUpCCTransaction transaction)
         {
+            // get capture details to get the currency
+            var captureDetails = await BuildClient(config)
+                .AppendPathSegments("v2", "payments", "captures", transaction.TransactionID)
+                .WithHeader("PayPal-Request-Id", transaction.RequestID)
+                .GetJsonAsync<PayPalCapture>();
+
             return await BuildClient(config)
                 .AppendPathSegments("v2", "payments", "captures", transaction.TransactionID, "refund")
                 .WithHeader("PayPal-Request-Id", transaction.RequestID)
-                .PostJsonAsync(new { }).ReceiveJson<PayPalOrderReturn>();
+                .WithHeader("Prefer", "return=representation")
+                .PostJsonAsync(new
+                {
+                    amount = new
+                    {
+                        value = transaction.Amount.ToString(),
+                        captureDetails.amount.currency_code
+                    },
+                    captureDetails.invoice_id
+                }).ReceiveJson<PayPalOrderReturn>();
         }
 
         // https://developer.paypal.com/docs/api/payment-tokens/v3/#customer_payment-tokens_get

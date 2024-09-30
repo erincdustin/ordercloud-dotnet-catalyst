@@ -25,9 +25,9 @@ namespace OrderCloud.Integrations.Payment.PayPal.Mappers
                 .FirstOrDefault()?.id;
             var ccTransaction = new CCTransactionResult
             {
-                Succeeded = authorizedOrder.status.ToLowerInvariant() == "COMPLETED" && authorizationId != null,
+                Succeeded = authorizedOrder.status.ToLowerInvariant() == "completed" && authorizationId != null,
                 Amount = amount,
-                TransactionID = authorizationId, // Authorization ID needed to Capture payment
+                TransactionID = authorizationId, // Authorization ID needed to Capture payment or Void Authorization
                 ResponseCode = null,
                 AuthorizationCode = null,
                 AVSResponseCode = null,
@@ -36,20 +36,17 @@ namespace OrderCloud.Integrations.Payment.PayPal.Mappers
             return ccTransaction;
         }
 
-        public CCTransactionResult MapCapturedPaymentToCCTransactionResult(PayPalOrder capturedOrder)
-        {
-            return new CCTransactionResult()
+        public CCTransactionResult MapCapturedPaymentToCCTransactionResult(PayPalOrder capturedOrder) =>
+            new CCTransactionResult()
             {
                 TransactionID = capturedOrder.id, // Capture ID needed to Refund payment
                 Succeeded = capturedOrder.status.ToLowerInvariant() == "completed"
             };
-        }
 
-        public CCTransactionResult MapRefundPaymentToCCTransactionResult(PayPalOrderReturn orderReturn)
-        {
-            return new CCTransactionResult
+        public CCTransactionResult MapRefundPaymentToCCTransactionResult(PayPalOrderReturn orderReturn) =>
+            new CCTransactionResult
             {
-                Succeeded = orderReturn.status.ToLowerInvariant() == "completed",
+                Succeeded = orderReturn.status.ToLowerInvariant() == "completed" && orderReturn.id != null,
                 Amount = ConvertStringAmountToDecimal(orderReturn.amount.value),
                 TransactionID = orderReturn.id,
                 ResponseCode = null,
@@ -57,7 +54,6 @@ namespace OrderCloud.Integrations.Payment.PayPal.Mappers
                 AVSResponseCode = null,
                 Message = orderReturn.note
             };
-        }
 
         private decimal ConvertStringAmountToDecimal(string value) =>
             Convert.ToDecimal(value, CultureInfo.InvariantCulture);

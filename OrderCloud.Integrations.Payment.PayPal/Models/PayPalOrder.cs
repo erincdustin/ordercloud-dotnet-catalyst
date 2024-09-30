@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace OrderCloud.Integrations.Payment.PayPal.Models
 {
@@ -85,6 +85,14 @@ namespace OrderCloud.Integrations.Payment.PayPal.Models
         public string status { get; set; }
         public string invoice_id { get; set; }
         public string note { get; set; }
+    }
+
+    public class PayPalCapture
+    {
+        public string id { get; set; }
+        public string status { get; set; }
+        public Amount amount { get; set; }
+        public string invoice_id { get; set; }
     }
 
     public class PaymentTokenResponse
