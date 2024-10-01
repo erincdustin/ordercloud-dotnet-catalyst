@@ -16,7 +16,7 @@ namespace OrderCloud.Integrations.Payment.PayPal.Mappers
                 return new PCISafeCardDetails
                 {
                     SavedCardID = paymentToken.id,
-                    Token = null,
+                    Token = paymentToken.id,
                     CardHolderName = paymentToken.payment_source.card?.name,
                     NumberLast4Digits = paymentToken.payment_source.card?.last_digits,
                     ExpirationMonth = expiryMonth,
@@ -24,20 +24,18 @@ namespace OrderCloud.Integrations.Payment.PayPal.Mappers
                     CardType = paymentToken.payment_source.card?.brand
                 };
             }
-            else // PayPal
+            // PayPal
+            var nameObj = paymentToken.payment_source.paypal?.name;
+            return new PCISafeCardDetails
             {
-                var nameObj = paymentToken.payment_source.paypal?.name;
-                return new PCISafeCardDetails
-                {
-                    SavedCardID = paymentToken.id,
-                    Token = null,
-                    CardHolderName = $"{nameObj.given_name} {nameObj.surname}",
-                    NumberLast4Digits = null,
-                    ExpirationMonth = null,
-                    ExpirationYear = null,
-                    CardType = "PayPal"
-                };
-            }
+                SavedCardID = paymentToken.id,
+                Token = paymentToken.id,
+                CardHolderName = $"{nameObj.given_name} {nameObj.surname}",
+                NumberLast4Digits = null,
+                ExpirationMonth = null,
+                ExpirationYear = null,
+                CardType = "PayPal"
+            };
         }
 
         public CardCreatedResponse MapPaymentTokenToCardCreatedResponse(PayPalPaymentToken paymentToken) =>
