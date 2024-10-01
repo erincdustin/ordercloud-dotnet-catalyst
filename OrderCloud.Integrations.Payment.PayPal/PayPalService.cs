@@ -11,22 +11,25 @@ namespace OrderCloud.Integrations.Payment.PayPal
     {
         #region ICreditCardProcessor
 
-        public Task<string> GetIFrameCredentialAsync(OCIntegrationConfig overrideConfig = null)
+        public async Task<string> GetIFrameCredentialAsync(OCIntegrationConfig overrideConfig = null)
         {
-            throw new NotImplementedException();
+            var config = ValidateConfig<PayPalConfig>(overrideConfig ?? _defaultConfig);
+            var requestId = Guid.NewGuid().ToString();
+            var tokenResponse = await PayPalClient.GetClientTokenAsync(config, requestId);
+            return tokenResponse;
         }
 
-        public async Task<AuthenticationResponse> GetAuthenticatedResponseAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig overrideConfig = null)
+        public async Task<CCTransactionResult> InitializePaymentRequestAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig overrideConfig = null)
         {
             var config = ValidateConfig<PayPalConfig>(overrideConfig ?? _defaultConfig);
             var purchaseUnitMapper = new PayPalOrderPaymentMapper();
             var purchaseUnit = purchaseUnitMapper.MapToPurchaseUnit(transaction);
-            var order = await PayPalClient.CreateAuthorizedOrderAsync(config, purchaseUnit, transaction.RequestID);
-            return new AuthenticationResponse()
+            var order = await PayPalClient.CreateAuthorizedOrderAsync(config, purchaseUnit, transaction);
+            return new CCTransactionResult
             {
-                Url = order.links.FirstOrDefault(l => l.rel == "approve")?.href,
-                TransactionID = order.id,
-                RequestID = transaction.RequestID
+                Succeeded = order.status.ToLowerInvariant() == "created",
+                Amount = transaction.Amount,
+                TransactionID = order.id
             };
         }
 
@@ -104,15 +107,19 @@ namespace OrderCloud.Integrations.Payment.PayPal
             return cardDetailsMapper.MapPaymentTokenToPCISafeCardDetails(paymentToken);
         }
 
-        public Task<CardCreatedResponse> CreateSavedCardAsync(PaymentSystemCustomer customer, PCISafeCardDetails card,
+        public async Task<CardCreatedResponse> CreateSavedCardAsync(PaymentSystemCustomer customer, PCISafeCardDetails card,
             OCIntegrationConfig overrideConfig = null)
         {
-            throw new NotImplementedException();
+            var config = ValidateConfig<PayPalConfig>(overrideConfig ?? _defaultConfig);
+            var paymentToken = await PayPalClient.CreatePaymentTokenAsync(config, card, customer);
+            var cardDetailsMapper = new PayPalPaymentTokensMapper();
+            return cardDetailsMapper.MapPaymentTokenToCardCreatedResponse(paymentToken);
         }
 
-        public Task DeleteSavedCardAsync(string customerID, string cardID, OCIntegrationConfig overrideConfig = null)
+        public async Task DeleteSavedCardAsync(string customerID, string cardID, OCIntegrationConfig overrideConfig = null)
         {
-            throw new NotImplementedException();
+            var config = ValidateConfig<PayPalConfig>(overrideConfig ?? _defaultConfig);
+            await PayPalClient.DeletePaymentTokenAsync(config, cardID);
         }
         #endregion
     }

@@ -28,19 +28,24 @@ namespace OrderCloud.Integrations.Payment.PayPal.Mappers
                 Succeeded = authorizedOrder.status.ToLowerInvariant() == "completed" && authorizationId != null,
                 Amount = amount,
                 TransactionID = authorizationId, // Authorization ID needed to Capture payment or Void Authorization
-                ResponseCode = null,
+                ResponseCode = authorizedOrder.processor_response.response_code,
                 AuthorizationCode = null,
-                AVSResponseCode = null,
+                AVSResponseCode = authorizedOrder.processor_response.avs_code,
                 Message = null
             };
             return ccTransaction;
         }
 
         public CCTransactionResult MapCapturedPaymentToCCTransactionResult(PayPalOrder capturedOrder) =>
-            new CCTransactionResult()
+            new CCTransactionResult
             {
                 TransactionID = capturedOrder.id, // Capture ID needed to Refund payment
-                Succeeded = capturedOrder.status.ToLowerInvariant() == "completed"
+                ResponseCode = capturedOrder.processor_response.response_code,
+                AuthorizationCode = null,
+                AVSResponseCode = capturedOrder.processor_response.avs_code,
+                Message = null,
+                Succeeded = capturedOrder.status.ToLowerInvariant() == "completed",
+                Amount = 0
             };
 
         public CCTransactionResult MapRefundPaymentToCCTransactionResult(PayPalOrderReturn orderReturn) =>

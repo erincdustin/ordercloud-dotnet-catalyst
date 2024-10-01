@@ -39,5 +39,21 @@ namespace OrderCloud.Integrations.Payment.PayPal.Mappers
                 };
             }
         }
+
+        public CardCreatedResponse MapPaymentTokenToCardCreatedResponse(PayPalPaymentToken paymentToken) =>
+            new CardCreatedResponse
+            {
+                Card = new PCISafeCardDetails()
+                {
+                    SavedCardID = paymentToken.id,
+                    Token = null,
+                    CardHolderName = paymentToken.payment_source.card?.name,
+                    NumberLast4Digits = paymentToken.payment_source.card?.last_digits,
+                    ExpirationMonth = paymentToken.payment_source.card?.expiry.Split('-').Last(),
+                    ExpirationYear = paymentToken.payment_source.card?.expiry.Split('-').First(),
+                    CardType = paymentToken.payment_source.card?.brand
+                },
+                CustomerID = paymentToken.customer.id
+            };
     }
 }

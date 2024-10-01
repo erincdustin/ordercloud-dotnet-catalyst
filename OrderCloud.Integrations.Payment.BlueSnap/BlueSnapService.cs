@@ -18,7 +18,7 @@ namespace OrderCloud.Integrations.Payment.BlueSnap
 			return token;
 		}
 
-        public Task<AuthenticationResponse> GetAuthenticatedResponseAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig overrideConfig = null)
+        public Task<CCTransactionResult> InitializePaymentRequestAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig overrideConfig = null)
         {
             throw new NotImplementedException();
         }

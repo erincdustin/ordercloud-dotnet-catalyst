@@ -9,7 +9,21 @@ namespace OrderCloud.Integrations.Payment.PayPal.Models
         public List<RelatedLink> links { get; set; }
         public List<PurchaseUnit> purchase_units { get; set; }
         public PaymentSource payment_source { get; set; }
+        public Payer payer { get; set; }
+        public ProcessorResponse processor_response { get; set; }
+    }
 
+    public class ProcessorResponse {
+        public string avs_code { get; set; }
+        public string cvv_code { get; set; }
+        public string response_code { get; set; }
+    }
+
+    public class Payer
+    {
+        public Name name { get; set; }
+        public string email_address { get; set; }
+        public string payer_id { get; set; }
     }
 
     public class RelatedLink
@@ -55,6 +69,7 @@ namespace OrderCloud.Integrations.Payment.PayPal.Models
     {
         public PayPal paypal { get; set; }
         public Card card { get; set; }
+        public PaymentToken token { get; set; }
     }
 
     public class PayPal
@@ -70,6 +85,12 @@ namespace OrderCloud.Integrations.Payment.PayPal.Models
         public string last_digits { get; set; }
         public string expiry { get; set; }
         public string brand { get; set; }
+    }
+
+    public class PaymentToken
+    {
+        public string id { get; set; }
+        public string type { get; set; }
     }
 
     public class Name

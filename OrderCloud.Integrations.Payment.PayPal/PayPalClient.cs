@@ -9,20 +9,53 @@ namespace OrderCloud.Integrations.Payment.PayPal
     public class PayPalClient
     {
         protected static IFlurlRequest BuildClient(PayPalConfig config) => config.BaseUrl.WithBasicAuth(config.ClientID, config.SecretKey);
+
+        public static async Task<string> GetClientTokenAsync(PayPalConfig config, string requestId)
+        {
+            var response = await BuildClient(config)
+                .AppendPathSegments("v1", "identity", "generate-token")
+                .WithHeader("PayPal-Request-Id", requestId)
+                .PostJsonAsync(new { })
+                .ReceiveJson<dynamic>();
+            return response["client_token"];
+        }
+
         #region Step 1: Create order with Authorize intent. Return approve URL to client
         // https://developer.paypal.com/docs/api/orders/v2/#orders_create
-        public static async Task<PayPalOrder> CreateAuthorizedOrderAsync(PayPalConfig config, PurchaseUnit purchaseUnit, string requestId)
+        public static async Task<PayPalOrder> CreateAuthorizedOrderAsync(PayPalConfig config, PurchaseUnit purchaseUnit, AuthorizeCCTransaction transaction)
         {
+            var paymentSource = new PaymentSource();
+            if (transaction.CardDetails != null)
+            {
+                if (transaction.CardDetails.SavedCardID != null)
+                {
+                    paymentSource.token = new PaymentToken()
+                    {
+                        id = transaction.CardDetails.SavedCardID,
+                        type = "BILLING_AGREEMENT"
+                    };
+                } else {
+                    paymentSource.card = new Card
+                    {
+                        name = transaction.CardDetails.CardHolderName,
+                        last_digits = transaction.CardDetails.NumberLast4Digits,
+                        expiry = $"{transaction.CardDetails.ExpirationMonth}/{transaction.CardDetails.ExpirationYear}",
+                        brand = transaction.CardDetails.CardType
+                    };
+                }
+
+            }
             return await BuildClient(config)
                 .AppendPathSegments("v2", "checkout", "orders")
-                .WithHeader("PayPal-Request-Id", requestId)
+                .WithHeader("PayPal-Request-Id", transaction)
                 .PostJsonAsync(new
                 {
                     intent = "AUTHORIZE",
                     purchase_units = new List<PurchaseUnit>()
                         {
                             purchaseUnit
-                        }
+                        },
+                    payment_source = paymentSource
                 })
                 .ReceiveJson<PayPalOrder>();
         }
@@ -35,8 +68,7 @@ namespace OrderCloud.Integrations.Payment.PayPal
             return await BuildClient(config)
                 .AppendPathSegments("v2", "checkout", "orders", transaction.OrderID, "authorize")
                 .WithHeader("PayPal-Request-Id", transaction.RequestID)
-                .PostJsonAsync(new
-                    { })
+                .PostJsonAsync(new { })
                 .ReceiveJson<PayPalOrder>();
         }
         #endregion
@@ -86,6 +118,24 @@ namespace OrderCloud.Integrations.Payment.PayPal
                 }).ReceiveJson<PayPalOrderReturn>();
         }
 
+        // https://developer.paypal.com/docs/api/payment-tokens/v3/#payment-tokens_create
+        public static async Task<PayPalPaymentToken> CreatePaymentTokenAsync(PayPalConfig config, PCISafeCardDetails card, PaymentSystemCustomer customer)
+        {
+            return await BuildClient(config)
+                .AppendPathSegments("v3", "vault", "payment-tokens")
+                .PostJsonAsync(new
+                {
+                    payment_source = new PaymentSource()
+                    {
+                        token =
+                        {
+                            id = card.SavedCardID,
+                            type = "SETUP_TOKEN"
+                        }
+                    }
+                }).ReceiveJson<PayPalPaymentToken>();
+        }
+
         // https://developer.paypal.com/docs/api/payment-tokens/v3/#customer_payment-tokens_get
         public static async Task<PaymentTokenResponse> ListPaymentTokensAsync(PayPalConfig config, string customerID)
         {
@@ -100,8 +150,14 @@ namespace OrderCloud.Integrations.Payment.PayPal
         {
             return await BuildClient(config)
                 .AppendPathSegments("v3", "vault", "payment-tokens", tokenID)
-                .WithHeader("PayPal-Request-ID", "")
                 .GetJsonAsync<PayPalPaymentToken>();
+        }
+
+        public static async Task DeletePaymentTokenAsync(PayPalConfig config, string tokenID)
+        {
+            await BuildClient(config)
+                .AppendPathSegments("v3", "vault", "payment-tokens", tokenID)
+                .DeleteAsync();
         }
     }
 }
