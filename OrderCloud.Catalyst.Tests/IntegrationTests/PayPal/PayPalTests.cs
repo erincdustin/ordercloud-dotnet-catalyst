@@ -1,42 +1,22 @@
-using System;
-using AutoFixture;
+using System.Linq;
 using NUnit.Framework;
 using OrderCloud.Integrations.Payment.PayPal;
-using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace OrderCloud.Catalyst.Tests.IntegrationTests
 {
     public class PayPalTests
     {
-        private static Fixture _fixture = new Fixture();
-        
-        //[Test]
-        //public void ShouldThrowErrorIfDefaultConfigMissingFields()
-        //{
-        //    var config = new PayPalConfig();
-        //    var ex = Assert.Throws<IntegrationMissingConfigsException>(() =>
-        //        new PayPalService(config)
-        //    );
-        //    var data = (IntegrationMissingConfigs)ex.Errors[0].Data;
-        //    Assert.AreEqual(data.ServiceName, "PayPal");
-        //    Assert.AreEqual(new List<string> { "SecretKey" }, data.MissingFieldNames);
-        //}
-
         [Test]
-        public async Task CanGetUserInfo()
+        public void ShouldThrowErrorIfDefaultConfigMissingFields()
         {
-            var ppClient = new PayPalClient();
-            var config = new PayPalConfig()
-            {
-                BaseUrl = "https://api-m.sandbox.paypal.com",
-                ClientID = "",
-                SecretKey = ""
-            };
-
-            var token = await ppClient.GetAccessTokenAsync(config);
-            var order = await ppClient.CreateAuthorizedOrderAsync(config, token);
-            order = await ppClient.CapturePaymentAsync(config, token, order.id);
-            Console.WriteLine(order);
-        }    
+            var config = new PayPalConfig();
+            var ex = Assert.Throws<IntegrationMissingConfigsException>(() =>
+                new PayPalService(config)
+            );
+            var data = (IntegrationMissingConfigs)ex.Errors[0].Data;
+            Assert.AreEqual(data.ServiceName, "PayPal");
+            Assert.True(data.MissingFieldNames.All(new List<string>{ "SecretKey", "BaseUrl", "ClientID" }.Contains));
+        }
     }
 }
