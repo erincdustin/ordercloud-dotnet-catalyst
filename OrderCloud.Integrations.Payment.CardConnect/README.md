@@ -26,7 +26,7 @@ The OrderCloud API does not have integration points designed specifically for pa
 
 ### Interaction Diagram for Credit Card Processing
 
-![Alt text](../credit_card_diagram.png "nteraction Diagram for Credit Card Processing")
+![Alt text](../credit_card_diagram.png "Interaction Diagram for Credit Card Processing")
 
 ## Package Installation 
 
