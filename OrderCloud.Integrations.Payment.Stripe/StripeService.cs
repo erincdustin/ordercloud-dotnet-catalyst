@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrderCloud.Catalyst;
 using OrderCloud.Integrations.Payment.Stripe.Mappers;
@@ -16,6 +17,11 @@ namespace OrderCloud.Integrations.Payment.Stripe
             var config = ValidateConfig<StripeConfig>(overrideConfig ?? _defaultConfig);
             var token = await Task.FromResult(config.PublishableKey);
             return token;
+        }
+
+        public Task<CCTransactionResult> InitializePaymentRequestAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig overrideConfig = null)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<CCTransactionResult> AuthorizeOnlyAsync(AuthorizeCCTransaction transaction,

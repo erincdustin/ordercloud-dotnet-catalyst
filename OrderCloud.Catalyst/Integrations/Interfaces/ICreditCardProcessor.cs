@@ -16,9 +16,13 @@ namespace OrderCloud.Catalyst
 		/// </summary>
 		Task<string> GetIFrameCredentialAsync(OCIntegrationConfig overrideConfig = null);
 		/// <summary>
-		/// Attempt to verify the user can pay by placing a hold on a credit card. Funds will be captured later. Typically used as a verification step directly before order submit.
+		/// Create the payment request to initialize payment processing.
 		/// </summary>
-		Task<CCTransactionResult> AuthorizeOnlyAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig overrideConfig = null);
+        Task<CCTransactionResult> InitializePaymentRequestAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig overrideConfig = null);
+        /// <summary>
+        /// Attempt to verify the user can pay by placing a hold on a credit card. Funds will be captured later. Typically used as a verification step directly before order submit.
+        /// </summary>
+        Task<CCTransactionResult> AuthorizeOnlyAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig overrideConfig = null);
 		/// <summary>
 		/// Attempt to capture funds from a credit card. A prior authorization is required. Typically used when a shipment is created, at the end of the day, or a defined time period after submit.
 		/// </summary>
@@ -32,7 +36,6 @@ namespace OrderCloud.Catalyst
 		/// </summary>
 		Task<CCTransactionResult> RefundCaptureAsync(FollowUpCCTransaction transaction, OCIntegrationConfig overrideConfig = null);
 	}
-
 
 	public class AuthorizeCCTransaction
 	{
@@ -68,6 +71,10 @@ namespace OrderCloud.Catalyst
 		/// Implementations of this interface may choose to ignore this or use it as they choose. Never use XP properties.
 		/// </summary>
 		public OrderWorksheet OrderWorksheet { get; set; }
+        /// <summary>
+        /// An optional header value used by some processors to enforce idempotency.
+        /// </summary>
+        public string RequestID { get; set; }
 	}
 
 	public class CCTransactionResult
@@ -85,7 +92,7 @@ namespace OrderCloud.Catalyst
 		/// </summary>
 		public string TransactionID { get; set; }
 		/// <summary>
-		/// The raw processor-specific response code. Depending on the processor, typical meaninings include Approved, Declined, Held For Review, Retry, Error.
+		/// The raw processor-specific response code. Depending on the processor, typical meanings include Approved, Declined, Held For Review, Retry, Error.
 		/// </summary>
 		public string ResponseCode { get; set; }
 		/// <summary>
@@ -103,7 +110,7 @@ namespace OrderCloud.Catalyst
     }
 
 	/// <summary>
-	/// A credit card transaction that follows after a successfull authorization such as capture, void, or refund.
+	/// A credit card transaction that follows after a successful authorization such as capture, void, or refund.
 	/// </summary>
 	public class FollowUpCCTransaction
 	{
@@ -115,5 +122,9 @@ namespace OrderCloud.Catalyst
 		/// The amount to capture, void, or refund. If null, will default to the full amount of the existing transaction.
 		/// </summary>
 		public decimal Amount { get; set; }
-	}
+        /// <summary>
+        /// An optional header value used by some processors to enforce idempotency.
+        /// </summary>
+        public string RequestID { get; set; }
+    }
 }

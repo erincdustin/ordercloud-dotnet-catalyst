@@ -28,7 +28,7 @@ Card details are collected via Stripe.js in the client. Once details are collect
 
 ### Interaction Diagram for Credit Card Processing
 
-![Alt text](../credit_card_diagram.png "nteraction Diagram for Credit Card Processing")
+![Alt text](../credit_card_diagram.png "Interaction Diagram for Credit Card Processing")
 
 ## Package Installation 
 

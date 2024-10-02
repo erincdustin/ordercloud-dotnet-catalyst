@@ -45,6 +45,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderCloud.Integrations.Mes
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderCloud.Integrations.Messaging.SendInBlue", "OrderCloud.Integrations.Messaging.Sendinblue\OrderCloud.Integrations.Messaging.SendInBlue.csproj", "{B82FF5A4-40B7-466F-A9D7-E2EE240AD800}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderCloud.Integrations.Payment.PayPal", "OrderCloud.Integrations.Payment.PayPal\OrderCloud.Integrations.Payment.PayPal.csproj", "{6D68B034-B37E-45EA-83F1-C38C9D97FE4C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -111,6 +113,10 @@ Global
 		{B82FF5A4-40B7-466F-A9D7-E2EE240AD800}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B82FF5A4-40B7-466F-A9D7-E2EE240AD800}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B82FF5A4-40B7-466F-A9D7-E2EE240AD800}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D68B034-B37E-45EA-83F1-C38C9D97FE4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D68B034-B37E-45EA-83F1-C38C9D97FE4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D68B034-B37E-45EA-83F1-C38C9D97FE4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D68B034-B37E-45EA-83F1-C38C9D97FE4C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -135,6 +141,7 @@ Global
 		{99B022A9-08EB-4472-8255-F68717A6232F} = {CDE5C68C-1A0F-4AF5-9D84-67CC3DCDE6CD}
 		{E5353313-3AC0-4E82-9750-E9782EFAA3B8} = {CDE5C68C-1A0F-4AF5-9D84-67CC3DCDE6CD}
 		{B82FF5A4-40B7-466F-A9D7-E2EE240AD800} = {CDE5C68C-1A0F-4AF5-9D84-67CC3DCDE6CD}
+		{6D68B034-B37E-45EA-83F1-C38C9D97FE4C} = {E2F1AEC1-72C7-485C-A908-B8592FA44790}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A5996C63-5092-41D0-9499-2B3B330BA82E}
