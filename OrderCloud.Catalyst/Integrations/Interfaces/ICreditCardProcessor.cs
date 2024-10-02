@@ -16,7 +16,7 @@ namespace OrderCloud.Catalyst
 		/// </summary>
 		Task<string> GetIFrameCredentialAsync(OCIntegrationConfig overrideConfig = null);
 		/// <summary>
-		/// Get the token for subsequent requests, and URL for the shopper to authenticate at.
+		/// Create the payment request to initialize payment processing.
 		/// </summary>
         Task<CCTransactionResult> InitializePaymentRequestAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig overrideConfig = null);
         /// <summary>

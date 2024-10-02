@@ -10,7 +10,7 @@ namespace OrderCloud.Integrations.Payment.PayPal
     {
         protected static IFlurlRequest BuildClient(PayPalConfig config) => config.BaseUrl.WithBasicAuth(config.ClientID, config.SecretKey);
 
-        #region Step 1: Create order with Authorize intent. Return approve URL to client
+        #region Step 1: Create order with Authorize intent
         // https://developer.paypal.com/docs/api/orders/v2/#orders_create
         public static async Task<PayPalOrder> CreateAuthorizedOrderAsync(PayPalConfig config, PurchaseUnit purchaseUnit, AuthorizeCCTransaction transaction)
         {
@@ -145,6 +145,7 @@ namespace OrderCloud.Integrations.Payment.PayPal
                 .GetJsonAsync<PayPalPaymentToken>();
         }
 
+        // https://developer.paypal.com/docs/api/payment-tokens/v3/#payment-tokens_deletes
         public static async Task DeletePaymentTokenAsync(PayPalConfig config, string tokenID)
         {
             await BuildClient(config)
