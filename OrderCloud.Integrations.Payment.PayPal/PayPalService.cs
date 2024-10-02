@@ -11,12 +11,9 @@ namespace OrderCloud.Integrations.Payment.PayPal
     {
         #region ICreditCardProcessor
 
-        public async Task<string> GetIFrameCredentialAsync(OCIntegrationConfig overrideConfig = null)
+        public Task<string> GetIFrameCredentialAsync(OCIntegrationConfig overrideConfig = null)
         {
-            var config = ValidateConfig<PayPalConfig>(overrideConfig ?? _defaultConfig);
-            var requestId = Guid.NewGuid().ToString();
-            var tokenResponse = await PayPalClient.GetClientTokenAsync(config, requestId);
-            return tokenResponse;
+            throw new NotImplementedException("Not required for PayPal");
         }
 
         public async Task<CCTransactionResult> InitializePaymentRequestAsync(AuthorizeCCTransaction transaction, OCIntegrationConfig overrideConfig = null)

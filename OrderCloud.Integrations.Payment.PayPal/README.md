@@ -19,46 +19,46 @@ Card details are collected via PayPal JavaScript SDK in the client. Once details
 
 | Description | Integration Method | PayPal Documentation | OrderCloud Platform Context |
 | ------------- | ------------- | ------------- | ------------- |
-| Request a client token for the JavaScript SDK | ICreditCardProcessor.GetIFrameCredentialAsync() | FIX! | Client token is returned to the front end. |
-| Create order in PayPal | ICreditCardProcessor.InitializePaymentRequestAsync() | [Link](https://developer.paypal.com/docs/api/orders/v2/#orders_create) | Save the token and PCI-safe card details (last 4 digits) on a Payment object attached to the Order |
-| Verify and hold funds | ICreditCardProcessor.AuthorizeOnlyAsync() | [Link](https://stripe.com/docs/api/payment_intents/create) | Within a pre-webhook or proxy route list Payments, attempt to authorize using the token, set payment accepted true, create a payment transaction, and then submit the Order |
-| Cancel or refund before capture | ICreditCardProcessor.VoidAuthorizationAsync() | [Link](https://stripe.com/docs/api/payment_intents/cancel) | In response to a cancelation, void server-side and create a payment transaction. |
-| Capture funds | ICreditCardProcessor.CapturePriorAuthorizationAsync() | [Link](https://stripe.com/docs/api/payment_intents/capture) | Catpure when the order is shipped or during a nightly batch job. Create a payment transaction. |
-| Cancel or refund after capture | ICreditCardProcessor.RefundCaptureAsync() | [Link](https://stripe.com/docs/api/refunds/create) | In response to a cancelation, refund server-side and create a payment transaction. |
+| Create order in PayPal | ICreditCardProcessor.InitializePaymentRequestAsync() | [Link](https://developer.paypal.com/docs/api/orders/v2/#orders_create) | Save the token and PCI-safe card details (last 4 digits) on a Payment object attached to the Order. |
+| Verify and hold funds | ICreditCardProcessor.AuthorizeOnlyAsync() | [Link](https://developer.paypal.com/docs/api/orders/v2/#orders_authorize) | Within a pre-webhook or proxy route list Payments, attempt to authorize using the token, set payment accepted true, create a payment transaction, and then submit the Order |
+| Cancel or refund before capture | ICreditCardProcessor.VoidAuthorizationAsync() | [Link](https://developer.paypal.com/docs/api/payments/v2/#authorizations_void) | In response to a cancelation, void server-side and create a payment transaction. |
+| Capture funds | ICreditCardProcessor.CapturePriorAuthorizationAsync() | [Link](https://developer.paypal.com/docs/api/payments/v2/#authorizations_capture) | Catpure when the order is shipped or during a nightly batch job. Create a payment transaction. |
+| Cancel or refund after capture | ICreditCardProcessor.RefundCaptureAsync() | [Link](https://developer.paypal.com/docs/api/payments/v2/#captures_refund) | In response to a cancelation, refund server-side and create a payment transaction. |
 
 ### Interaction Diagram for Credit Card Processing
 
-![Alt text](../credit_card_diagram.png "nteraction Diagram for Credit Card Processing")
+![Alt text](../credit_card_diagram.png "Interaction Diagram for Credit Card Processing")
 
 ## Package Installation 
 
 This nuget library can be installed in the context of a .NET server-side project. If you already have a .NET project, great. If not, you can [follow this guide](https://ordercloud.io/knowledge-base/start-dotnet-middleware-from-scratch).
 
-```dotnet add package OrderCloud.Integrations.Payment.Stripe```
+```dotnet add package OrderCloud.Integrations.Payment.PayPal```
 
 ## Authentication and Injection
 
-You will need a SecretKey configured to authneticate to the Stripe API. Click [here](https://stripe.com/docs/keys) to learn more about Stripe's API keys. 
+You will need a ClientID and Client Secret configured to authneticate to the PayPal API. Click [here](https://developer.paypal.com/api/rest/) to learn more about PayPal's authentication. 
 
 ```c#
-var stripeService = new StripeService(new StripeConfig()
+var paypalService = new PayPalService(new PayPalConfig()
 {
-	SecretKey = "sk_123456...."
+	ClientID = "AaChL7MjH..."
+	SecretKey = "ELVYgPZr6..."
 });
 ```
 
-For efficient use of compute resources and clean code, create 1 StripeService object and make it available throughout your project using inversion of control dependency injection. 
+For efficient use of compute resources and clean code, create 1 PayPalService object and make it available throughout your project using inversion of control dependency injection. 
 
 ```c#
-services.AddSingleton<ICreditCardProcessor>(stripeService);
-services.AddSingleton<ICreditCardSaver>(stripeService);
+services.AddSingleton<ICreditCardProcessor>(paypalService);
+services.AddSingleton<ICreditCardSaver>(paypalService);
 ```
 
-Notice that ICreditCardProcessor and ICreditCardSaver are not specific to Stripe. They are general to the problem domain and come from the upstream ordercloud-dotnet-catalyst package. 
+Notice that ICreditCardProcessor and ICreditCardSaver are not specific to PayPal. They are general to the problem domain and come from the upstream ordercloud-dotnet-catalyst package. 
 
 ## Usage 
 
-Inject the interfaces and use them within route logic. Rely on the interfaces whenever you can, not StripeService. The layer of abstraction that ICreditCardProcessor and ICreditCardSaver provide decouples your code from Stripe as a specific provider and hides some internal complexity.
+Inject the interfaces and use them within route logic. Rely on the interfaces whenever you can, not PayPalService. The layer of abstraction that ICreditCardProcessor and ICreditCardSaver provide decouples your code from PayPal as a specific provider and hides some internal complexity.
 
 ```c#
 public class CreditCardCommand 
@@ -68,7 +68,7 @@ public class CreditCardCommand
 
 	public CreditCardCommand(ICreditCardProcessor creditCardProcessor, ICreditCardSaver creditCardSaver)
 	{
-		// Inject interface. Implementation will depend on how services were registered, StripeService in this case.
+		// Inject interface. Implementation will depend on how services were registered, PayPalService in this case.
 		_creditCardProcessor = creditCardProcessor; 
 		_creditCardSaver = creditCardSaver;
 	}
@@ -122,10 +122,10 @@ public class CreditCardCommand
 }
 ```
 
-This library also supports more complex cases that require mulitple merchant accounts with different credentials. For example, in a franchise business model where each location is independent but all sell on one ecommerce solution. In that case, still inject one instance of StripeService exactly as above. You can provide empty strings for the credentials. However, when you call methods on the interfaces, provide the optional `configOverride` parameter. 
+This library also supports more complex cases that require mulitple merchant accounts with different credentials. For example, in a franchise business model where each location is independent but all sell on one ecommerce solution. In that case, still inject one instance of PayPalService exactly as above. You can provide empty strings for the credentials. However, when you call methods on the interfaces, provide the optional `configOverride` parameter. 
 
 ```c#
-StripeConfig configOverride = await FetchPaymentAccountCredentials(supplierID)
+PayPalConfig configOverride = await FetchPaymentAccountCredentials(supplierID)
 var authorize = new AuthorizeCCTransaction();
 List<List<ShipMethods> rates = await _creditCardProcessor.AuthorizeOnlyAsync(authorize, configOverride);
 ```
