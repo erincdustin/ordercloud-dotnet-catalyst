@@ -12,17 +12,22 @@
 	  <PackageProjectUrl>https://github.com/ordercloud-api/ordercloud-dotnet-catalyst</PackageProjectUrl>
 	  <PackageIconUrl></PackageIconUrl>
 	  <PackageIcon>sitecore_logo.jpg</PackageIcon>
-	  <PackageTags>ordercloud ecommerce payment webjobs sitecore stripe</PackageTags>
+	  <PackageTags>ordercloud ecommerce payment webjobs sitecore paypal</PackageTags>
 	  <PackageLicenseUrl></PackageLicenseUrl>
 	  <RepositoryUrl>https://github.com/ordercloud-api/ordercloud-dotnet-catalyst</RepositoryUrl>
 	  <RepositoryType>git</RepositoryType>
 	  <Company>Sitecore</Company>
 	  <Product>OrderCloud</Product>
 	  <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+	  <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
 	<ItemGroup>
 		<None Include="..\sitecore_logo.jpg" Link="sitecore_logo.jpg">
+			<PackagePath>\</PackagePath>
+			<Pack>true</Pack>
+		</None>
+		<None Include="..\README.md">
 			<PackagePath>\</PackagePath>
 			<Pack>true</Pack>
 		</None>
