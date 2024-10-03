@@ -37,13 +37,14 @@ This nuget library can be installed in the context of a .NET server-side project
 
 ## Authentication and Injection
 
-You will need a ClientID and Client Secret configured to authneticate to the PayPal API. Click [here](https://developer.paypal.com/api/rest/) to learn more about PayPal's authentication. 
+You will need a ClientID and Client Secret configured to authneticate to the PayPal API, along with the URL for the PayPal environment you are targeting. Click [here](https://developer.paypal.com/api/rest/) to learn more about PayPal's authentication. 
 
 ```c#
 var paypalService = new PayPalService(new PayPalConfig()
 {
-	ClientID = "AaChL7MjH..."
-	SecretKey = "ELVYgPZr6..."
+	ClientID = "AaChL7MjH...",
+	SecretKey = "ELVYgPZr6...",
+	BaseUrl = "https://api-m.sandbox.paypal.com"
 });
 ```
 
