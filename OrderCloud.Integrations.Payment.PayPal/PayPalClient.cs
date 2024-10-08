@@ -17,24 +17,16 @@ namespace OrderCloud.Integrations.Payment.PayPal
             var paymentSource = new PaymentSource();
             if (transaction.CardDetails != null)
             {
+                paymentSource.card = new Card();
                 if (transaction.CardDetails.SavedCardID != null)
                 {
-                    paymentSource.token = new PaymentToken()
-                    {
-                        id = transaction.CardDetails.SavedCardID,
-                        type = "BILLING_AGREEMENT"
-                    };
-                } else {
-                    paymentSource.card = new Card
-                    {
-                        name = transaction.CardDetails.CardHolderName,
-                        last_digits = transaction.CardDetails.NumberLast4Digits,
-                        expiry = $"{transaction.CardDetails.ExpirationMonth}/{transaction.CardDetails.ExpirationYear}",
-                        brand = transaction.CardDetails.CardType
-                    };
+                    paymentSource.card.vault_id = transaction.CardDetails.SavedCardID;
+                } else if (transaction.CardDetails.Token != null)
+                {
+                    paymentSource.card.single_use_token = transaction.CardDetails.Token;
                 }
-
             }
+
             return await BuildClient(config)
                 .AppendPathSegments("v2", "checkout", "orders")
                 .WithHeader("PayPal-Request-Id", transaction.RequestID)
@@ -45,7 +37,7 @@ namespace OrderCloud.Integrations.Payment.PayPal
                         {
                             purchaseUnit
                         },
-                    payment_source = paymentSource
+                    payment_source = paymentSource.card != null ? paymentSource : null
                 })
                 .ReceiveJson<PayPalOrder>();
         }

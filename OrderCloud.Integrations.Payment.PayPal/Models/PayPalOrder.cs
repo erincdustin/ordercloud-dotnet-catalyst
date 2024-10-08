@@ -85,6 +85,8 @@ namespace OrderCloud.Integrations.Payment.PayPal.Models
         public string last_digits { get; set; }
         public string expiry { get; set; }
         public string brand { get; set; }
+        public string vault_id { get; set; }
+        public string single_use_token { get; set; }
     }
 
     public class PaymentToken
