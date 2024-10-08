@@ -10,10 +10,14 @@ namespace OrderCloud.Catalyst
 	/// </summary>
 	public interface ICreditCardSaver
 	{
-		/// <summary>
-		/// List Saved Credit Cards
-		/// </summary>
-		Task<List<PCISafeCardDetails>> ListSavedCardsAsync(string customerID, OCIntegrationConfig configOverride = null);
+        /// <summary>
+        /// Creates a token used to create a saved card after full card details have been tokenized by the payment provider
+        /// </summary>
+        Task<string> InitializeCreateSavedCardRequestAsync(OCIntegrationConfig overrideConfig = null);
+        /// <summary>
+        /// List Saved Credit Cards
+        /// </summary>
+        Task<List<PCISafeCardDetails>> ListSavedCardsAsync(string customerID, OCIntegrationConfig configOverride = null);
 		/// <summary>
 		/// Get a single saved credit card
 		/// </summary>

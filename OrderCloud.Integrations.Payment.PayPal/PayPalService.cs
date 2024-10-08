@@ -81,6 +81,12 @@ namespace OrderCloud.Integrations.Payment.PayPal
         {
         }
 
+        public async Task<string> InitializeCreateSavedCardRequestAsync(OCIntegrationConfig overrideConfig = null)
+        {
+            var config = ValidateConfig<PayPalConfig>(overrideConfig ?? _defaultConfig);
+            return await PayPalClient.CreateVaultSetupToken(config);
+        }
+
         public async Task<List<PCISafeCardDetails>> ListSavedCardsAsync(string customerID, OCIntegrationConfig overrideConfig = null)
         {
             var config = ValidateConfig<PayPalConfig>(overrideConfig ?? _defaultConfig);

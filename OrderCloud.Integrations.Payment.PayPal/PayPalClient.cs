@@ -100,6 +100,22 @@ namespace OrderCloud.Integrations.Payment.PayPal
                 }).ReceiveJson<PayPalOrderReturn>();
         }
 
+        public static async Task<string> CreateVaultSetupToken(PayPalConfig config)
+        {
+            var response = await BuildClient(config)
+                .AppendPathSegments("v3", "vault", "setup-tokens")
+                .PostJsonAsync(new
+                {
+                    payment_source = new PaymentSource()
+                    {
+                        card = new Card()
+                    }
+                });
+
+            var tokenResponse = await response.GetJsonAsync<PayPalPaymentToken>();
+            return tokenResponse.id;
+        }
+
         // https://developer.paypal.com/docs/api/payment-tokens/v3/#payment-tokens_create
         public static async Task<PayPalPaymentToken> CreatePaymentTokenAsync(PayPalConfig config, PCISafeCardDetails card, PaymentSystemCustomer customer)
         {
