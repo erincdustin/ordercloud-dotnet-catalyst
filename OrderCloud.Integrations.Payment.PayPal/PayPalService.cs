@@ -24,7 +24,7 @@ namespace OrderCloud.Integrations.Payment.PayPal
             var order = await PayPalClient.CreateAuthorizedOrderAsync(config, purchaseUnit, transaction);
             return new CCTransactionResult
             {
-                Succeeded = order.status.ToLowerInvariant() == "created",
+                Succeeded = new List<string>{ "created", "completed" }.Contains(order.status.ToLowerInvariant()),
                 Amount = transaction.Amount,
                 TransactionID = order.id
             };
