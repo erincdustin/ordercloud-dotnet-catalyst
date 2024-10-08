@@ -55,7 +55,12 @@ namespace OrderCloud.Integrations.Payment.BlueSnap
 			return BlueSnapTransactionMapper.ToCardTransactionResult(result);
 		}
 
-		public async Task<List<PCISafeCardDetails>> ListSavedCardsAsync(string customerID, OCIntegrationConfig overrideConfig = null)
+        public Task<string> InitializeCreateSavedCardRequestAsync(OCIntegrationConfig overrideConfig = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<List<PCISafeCardDetails>> ListSavedCardsAsync(string customerID, OCIntegrationConfig overrideConfig = null)
 		{
 			var config = ValidateConfig<BlueSnapConfig>(overrideConfig ?? _defaultConfig);
 			var shopper = await BlueSnapClient.GetVaultedShopper(customerID, config);

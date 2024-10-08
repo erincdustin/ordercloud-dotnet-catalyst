@@ -51,7 +51,13 @@ namespace OrderCloud.Integrations.Payment.CardConnect
 			var cardConnectVoidAuthorizationResponse = await CardConnectClient.VoidPreviousAuthorization(transaction.ToCardConnectFundReversalRequest(config), config);
 			return cardConnectVoidAuthorizationResponse.ToIntegrationsCCFundReversalResponse();
 		}
-		public async Task<List<PCISafeCardDetails>> ListSavedCardsAsync(string customerId, OCIntegrationConfig overrideConfig = null)
+
+        public Task<string> InitializeCreateSavedCardRequestAsync(OCIntegrationConfig overrideConfig = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<List<PCISafeCardDetails>> ListSavedCardsAsync(string customerId, OCIntegrationConfig overrideConfig = null)
 		{
 			var config = ValidateConfig<CardConnectConfig>(overrideConfig ?? _defaultConfig);
 			var cardConnectSavedCards = await CardConnectClient.GetProfileAsync(customerId, config.MerchantId, config);

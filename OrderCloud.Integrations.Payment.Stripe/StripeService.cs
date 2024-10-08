@@ -89,6 +89,11 @@ namespace OrderCloud.Integrations.Payment.Stripe
             return paymentMethodMapper.MapPaymentMethodCreateResponse(customer.ID, paymentMethod);
         }
 
+        public Task<string> InitializeCreateSavedCardRequestAsync(OCIntegrationConfig overrideConfig = null)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<List<PCISafeCardDetails>> ListSavedCardsAsync(string customerID,
             OCIntegrationConfig configOverride = null)
         {

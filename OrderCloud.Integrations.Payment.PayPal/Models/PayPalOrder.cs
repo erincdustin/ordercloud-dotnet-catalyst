@@ -136,5 +136,6 @@ namespace OrderCloud.Integrations.Payment.PayPal.Models
         public PayPalCustomer customer { get; set; }
         public PaymentSource payment_source { get; set; }
         public List<RelatedLink> links { get; set; }
+        public string status { get; set; }
     }
 }
