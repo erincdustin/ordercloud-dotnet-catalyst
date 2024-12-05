@@ -48,7 +48,7 @@ namespace OrderCloud.Integrations.Payment.PayPal.Mappers
                             },
                             description = transaction?.OrderWorksheet?.Order?.Comments,
                             reference_id = Guid.NewGuid().ToString(),
-                            invoice_id = Guid.NewGuid().ToString(),
+                            invoice_id = transaction?.OrderID,
                         };
                         if (address != null)
                         {
